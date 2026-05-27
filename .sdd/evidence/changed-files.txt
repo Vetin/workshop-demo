@@ -94,3 +94,5 @@ docs/ai-knowledge/validation/sdd-evidence-format.md
 .claude/agents/distributed-flow-reviewer.md
 docs/features/_template/changes/_template/tasks/task-template.md
 .sdd/evidence/pipeline-setup-complete.md
+docs/features/checkout-flow/overview.md
+docs/features/checkout-flow/changes/gift-wrap-checkout/01-design.md
