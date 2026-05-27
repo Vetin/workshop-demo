@@ -1,5 +1,5 @@
 ---
-name: {name}
+name: { name }
 description: Read-only reviewer for {review_category}. Use when {when_to_use}.
 tools: Read, Grep, Glob, Bash
 model: sonnet
@@ -15,7 +15,7 @@ You are read-only. Do not edit files.
 
 ## Read first
 
-1. Relevant spec under specs/features/
+1. Relevant spec under docs/features/
 2. Relevant feature docs under docs/features/
 3. Relevant project knowledge under docs/ai-knowledge/
 4. Current git diff
@@ -38,17 +38,20 @@ You are read-only. Do not edit files.
 verdict: pass | needs-changes | blocked
 
 findings:
-  - severity: blocker | major | minor | suggestion
-    file:
-    spec_or_doc:
-    issue:
-    evidence:
-    required_fix:
+
+- severity: blocker | major | minor | suggestion
+  file:
+  spec_or_doc:
+  issue:
+  evidence:
+  required_fix:
 
 docs_to_update:
-  - path:
-    reason:
+
+- path:
+  reason:
 
 unknowns:
-  - question:
-    blocking: true | false
+
+- question:
+  blocking: true | false

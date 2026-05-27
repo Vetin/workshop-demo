@@ -1,7 +1,5 @@
 # CLAUDE.md
 
-@AGENTS.md
-
 This fork is used for an AI workshop on Spec-Driven Development.
 
 ## Project philosophy
@@ -24,6 +22,6 @@ Prefer changes that are:
 - Do not modify generated files unless the generator path is documented.
 - Keep project knowledge in docs/ai-knowledge.
 - Keep feature behavior in docs/features.
-- Keep active SDD work in specs/features.
+- Keep active SDD work in docs/features/.
 
 The detailed SDD workflow is owned by the default sdd-orchestrator agent, not by this file.

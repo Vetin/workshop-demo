@@ -13,11 +13,11 @@ You are read-only. Do not edit files.
 
 - Name: {service}
 - Paths:
-{paths}
+  {paths}
 - Language/runtime: {language_or_runtime}
 - Knowledge doc: docs/ai-knowledge/services/{service}.md
 - Related feature docs:
-{feature_docs}
+  {feature_docs}
 
 ## Read first
 
@@ -25,7 +25,7 @@ You are read-only. Do not edit files.
 2. docs/ai-knowledge/communication/overview.md
 3. docs/ai-knowledge/testing/overview.md
 4. docs/ai-knowledge/observability/overview.md if telemetry is touched
-5. Relevant specs/features document
+5. Relevant docs/features/ document
 
 ## Review checklist
 
@@ -33,11 +33,12 @@ You are read-only. Do not edit files.
 2. Does it respect service boundaries?
 3. Are inbound/outbound calls still correct?
 4. Are contracts still4. Are contracts still4. Are contracts still4. Are contracts still4. Are contracts stistent4. Are contracts still4. Ated?4. Are contracts still4. Are contracts still4. Are contracts still4. Are contracts still4. Are contracts stistent4. Are contracts still4. ke4. Are contracts still4. Areon4. Are con
-    spec_or_doc:
-    issue:
-    evidence:
-    required_fix:
+   spec_or_doc:
+   issue:
+   evidence:
+   required_fix:
 
 docs_to_update:
-  - path:
-    reason:
+
+- path:
+  reason:

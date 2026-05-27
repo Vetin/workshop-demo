@@ -1,0 +1,307 @@
+{
+  "version": 2,
+  "pipeline": "sdd-delivery",
+  "lastUpdated": "2026-05-27",
+  "requiresSetup1": true,
+
+  "featureStorage": {
+    "stableDocsPattern": "docs/features/{featureArea}/overview.md",
+    "stableDetailPattern": "docs/features/{featureArea}/detail.md",
+    "changeDocsPattern": "docs/features/{featureArea}/changes/{changeSlug}/",
+    "doNotUse": "docs/features/*.md (top-level flat files are legacy)"
+  },
+
+  "knownFeatureAreas": [
+    "checkout-flow",
+    "order-confirmation-email",
+    "product-browsing",
+    "product-reviews",
+    "recommendations",
+    "feature-flags"
+  ],
+
+  "docs": {
+    "architecture": "docs/ai-knowledge/architecture",
+    "services": "docs/ai-knowledge/services",
+    "communication": "docs/ai-knowledge/communication",
+    "frontend": "docs/ai-knowledge/frontend",
+    "uiKit": "docs/ai-knowledge/ui-kit",
+    "testing": "docs/ai-knowledge/testing",
+    "observability": "docs/ai-knowledge/observability",
+    "validation": "docs/ai-knowledge/validation",
+    "agents": "docs/ai-knowledge/agents",
+    "learning": "docs/ai-knowledge/learning",
+    "features": "docs/features"
+  },
+
+  "skills": {
+    "start": "sdd-start",
+    "reviewDesign": "sdd-review-design",
+    "plan": "sdd-plan",
+    "reviewPlan": "sdd-review-plan",
+    "execute": "sdd-execute",
+    "verify": "sdd-verify",
+    "finalize": "sdd-finalize"
+  },
+
+  "implementers": {
+    "typescript-frontend-implementer": {
+      "services": ["frontend"],
+      "language": "TypeScript/React/Next.js",
+      "paths": ["src/frontend/"]
+    },
+    "go-implementer": {
+      "services": ["checkout", "product-catalog"],
+      "language": "Go",
+      "paths": ["src/checkout/", "src/product-catalog/"]
+    },
+    "csharp-dotnet-implementer": {
+      "services": ["accounting", "cart"],
+      "language": "C#/.NET",
+      "paths": ["src/accounting/", "src/cart/"]
+    },
+    "cpp-implementer": {
+      "services": ["currency"],
+      "language": "C++",
+      "paths": ["src/currency/"]
+    },
+    "elixir-implementer": {
+      "services": ["flagd-ui"],
+      "language": "Elixir",
+      "paths": ["src/flagd-ui/"]
+    },
+    "java-implementer": {
+      "services": ["ad", "kafka"],
+      "language": "Java",
+      "paths": ["src/ad/", "src/kafka/"]
+    },
+    "javascript-node-implementer": {
+      "services": ["payment"],
+      "language": "JavaScript/Node.js",
+      "paths": ["src/payment/"]
+    },
+    "kotlin-implementer": {
+      "services": ["fraud-detection"],
+      "language": "Kotlin",
+      "paths": ["src/fraud-detection/"]
+    },
+    "php-implementer": {
+      "services": ["quote"],
+      "language": "PHP",
+      "paths": ["src/quote/"]
+    },
+    "python-implementer": {
+      "services": ["llm", "load-generator", "product-reviews", "recommendation"],
+      "language": "Python",
+      "paths": [
+        "src/llm/",
+        "src/load-generator/",
+        "src/product-reviews/",
+        "src/recommendation/"
+      ]
+    },
+    "ruby-implementer": {
+      "services": ["email"],
+      "language": "Ruby",
+      "paths": ["src/email/"]
+    },
+    "rust-implementer": {
+      "services": ["shipping"],
+      "language": "Rust",
+      "paths": ["src/shipping/"]
+    },
+    "infra-otel-implementer": {
+      "services": ["otel-collector", "flagd", "frontend-proxy"],
+      "language": "Infra/Config",
+      "paths": [
+        "src/otel-collector/",
+        "src/flagd/",
+        "src/frontend-proxy/",
+        "docker-compose.yml",
+        "docker-compose.minimal.yml",
+        "kubernetes/"
+      ]
+    }
+  },
+
+  "domainExperts": {
+    "pattern": "domain-{serviceName}-expert",
+    "services": [
+      "accounting", "ad", "cart", "checkout", "currency",
+      "email", "flagd", "flagd-ui", "fraud-detection",
+      "frontend", "frontend-proxy", "grafana", "image-provider",
+      "jaeger", "kafka", "llm", "load-generator", "opensearch",
+      "otel-collector", "payment", "postgresql", "product-catalog",
+      "product-reviews", "prometheus", "quote", "recommendation",
+      "shipping", "valkey-cart"
+    ]
+  },
+
+  "technicalReviewers": {
+    "technical-typescript-reviewer": {
+      "languages": ["TypeScript", "React", "Next.js"],
+      "services": ["frontend"]
+    },
+    "technical-go-reviewer": {
+      "languages": ["Go"],
+      "services": ["checkout", "product-catalog"]
+    },
+    "technical-python-reviewer": {
+      "languages": ["Python"],
+      "services": ["llm", "load-generator", "product-reviews", "recommendation"]
+    },
+    "technical-csharp-dotnet-reviewer": {
+      "languages": ["C#", ".NET"],
+      "services": ["accounting", "cart"]
+    },
+    "technical-java-reviewer": {
+      "languages": ["Java"],
+      "services": ["ad", "kafka"]
+    },
+    "technical-kotlin-reviewer": {
+      "languages": ["Kotlin"],
+      "services": ["fraud-detection"]
+    },
+    "technical-rust-reviewer": {
+      "languages": ["Rust"],
+      "services": ["shipping"]
+    },
+    "technical-php-reviewer": {
+      "languages": ["PHP"],
+      "services": ["quote"]
+    },
+    "technical-ruby-reviewer": {
+      "languages": ["Ruby"],
+      "services": ["email"]
+    },
+    "technical-elixir-reviewer": {
+      "languages": ["Elixir"],
+      "services": ["flagd-ui"]
+    },
+    "technical-javascript-node-reviewer": {
+      "languages": ["JavaScript", "Node.js"],
+      "services": ["payment"]
+    },
+    "technical-cpp-reviewer": {
+      "languages": ["C++"],
+      "services": ["currency"]
+    }
+  },
+
+  "reviewOrder": [
+    "implementer-self-review",
+    "spec-compliance-reviewer",
+    "domain-{service}-expert (if service logic changed)",
+    "technical-{language}-reviewer (per changed language — always)",
+    "observability-reviewer",
+    "security-data-leak-reviewer",
+    "test-verification-reviewer",
+    "service-contract-reviewer (conditional: protoOrApiChange)",
+    "distributed-flow-reviewer (conditional: crossServiceChange)",
+    "frontend-ui-kit-reviewer (conditional: frontendChange)",
+    "code-quality-reviewer (only after spec-compliance-reviewer passes)",
+    "docs-consistency-reviewer"
+  ],
+
+  "alwaysRunReviewers": [
+    "spec-compliance-reviewer",
+    "technical-{language}-reviewer (per changed language)",
+    "observability-reviewer",
+    "security-data-leak-reviewer",
+    "test-verification-reviewer",
+    "code-quality-reviewer",
+    "docs-consistency-reviewer"
+  ],
+
+  "conditionalReviewers": {
+    "serviceLogicChanged": [
+      "domain-{service}-expert"
+    ],
+    "protoOrApiChange": [
+      "service-contract-reviewer"
+    ],
+    "crossServiceChange": [
+      "distributed-flow-reviewer"
+    ],
+    "frontendChange": [
+      "frontend-ui-kit-reviewer"
+    ],
+    "documentationOrKnowledgeChange": [
+      "knowledge-curator",
+      "docs-consistency-reviewer"
+    ]
+  },
+
+  "codeQualityReviewRule": "code-quality-reviewer runs only after spec-compliance-reviewer passes",
+
+  "finalVerificationRules": {
+    "required": [
+      "All planned tasks marked complete",
+      "All task evidence files exist (tasks/*.evidence.md)",
+      "spec-compliance-reviewer passed on all tasks",
+      "observability-reviewer passed",
+      "security-data-leak-reviewer passed",
+      "verification/final-verification-report.md exists with verdict pass",
+      "docs-consistency-reviewer passed"
+    ],
+    "waiver": "User may explicitly waive verification with documented rationale"
+  },
+
+  "humanEscalationTriggers": [
+    "product behavior is unclear or scope changes",
+    "service boundary changes",
+    "public contract changes (proto)",
+    "telemetry semantics change",
+    "sensitive data handling changes",
+    "rollout strategy changes",
+    "reviewer finding affects architecture, security, or product",
+    "plan is wrong",
+    "verification repeatedly fails with no new information"
+  ],
+
+  "neverAsk": "Do not ask 'should I continue?' when an approved plan has remaining tasks.",
+
+  "evidenceRequirements": {
+    "taskEvidence": "docs/features/{featureArea}/changes/{changeSlug}/tasks/{taskId}.evidence.md",
+    "verificationReport": "docs/features/{featureArea}/changes/{changeSlug}/verification/final-verification-report.md",
+    "completionMarkers": [
+      ".sdd/evidence/latest-spec-review-pass",
+      ".sdd/evidence/latest-code-quality-pass",
+      ".sdd/evidence/latest-verification-pass"
+    ]
+  },
+
+  "hookPolicy": {
+    "allowedHookUses": [
+      "dangerous command blocking",
+      "changed-file recording",
+      "optional final evidence guard"
+    ],
+    "notAllowed": "Hooks must not be the primary semantic review mechanism"
+  },
+
+  "selfLearningRules": {
+    "afterFinalization": [
+      "Run knowledge-curator to update docs/ai-knowledge/ where behavior changed",
+      "Update docs/ai-knowledge/learning/iteration-log.md",
+      "Propose updates via docs/ai-knowledge/learning/proposed-updates.md",
+      "Rejected updates go to docs/ai-knowledge/learning/rejected-updates.md with rationale",
+      "All updates reviewed by docs-consistency-reviewer before acceptance"
+    ]
+  },
+
+  "validationPriorityOrder": [
+    "security-data-leak",
+    "service-contract-compatibility",
+    "observability",
+    "technical-correctness",
+    "distributed-flow",
+    "service-architecture-and-project-rules",
+    "domain-behavior",
+    "testing-verification-evidence",
+    "code-quality",
+    "frontend-ui-kit",
+    "documentation-consistency",
+    "knowledge-update-quality"
+  ]
+}

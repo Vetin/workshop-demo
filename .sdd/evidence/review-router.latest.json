@@ -1,0 +1,16 @@
+{
+  "changed_files": [
+    ".claude/settings.json"
+  ],
+  "gate_level": "fast",
+  "reviewers": [
+    {
+      "agent": "docs-consistency-reviewer",
+      "reason": "always included"
+    },
+    {
+      "agent": "test-verification-reviewer",
+      "reason": "always included"
+    }
+  ]
+}

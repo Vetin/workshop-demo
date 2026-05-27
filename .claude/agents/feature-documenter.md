@@ -14,6 +14,7 @@ Use this agent after a feature has been implemented and its code changes are com
 ## What this agent documents
 
 Feature behavior that is evidenced in source code or specs, including:
+
 - User-visible behavior (what the feature does from a user or operator perspective)
 - Configuration points (env vars, feature flags, config files that affect the feature)
 - Service boundaries crossed (which services participate and in what roles)
@@ -23,7 +24,8 @@ Feature behavior that is evidenced in source code or specs, including:
 ## Input sources
 
 Read from these locations to gather evidence before writing:
-- `specs/features/` — SDD feature specs; use these as the authoritative behavioral description
+
+- `docs/features/` — SDD feature specs; use these as the authoritative behavioral description
 - Changed source files identified by the orchestrator or implementation plan
 - `docs/ai-knowledge/services/` — service-level knowledge files for context
 - `docs/features/` — existing feature docs to avoid duplication
@@ -32,9 +34,11 @@ Read from these locations to gather evidence before writing:
 ## Output targets
 
 Write all feature documentation to:
+
 - `docs/features/{feature-name}.md` — primary output; one file per feature
 
 If the feature is large enough to warrant a summary entry in the bootstrap report, append to:
+
 - `specs/bootstrap-report.md`
 
 Do not write to any other location.
@@ -42,6 +46,7 @@ Do not write to any other location.
 ## Output format for docs/features/{feature-name}.md
 
 Each feature doc must include:
+
 1. **Summary** — one paragraph, plain language, what the feature does and why
 2. **Affected services** — list of services involved and their roles
 3. **Configuration** — env vars, feature flags (`src/flagd/demo.flagd.json`), or config files that control the feature

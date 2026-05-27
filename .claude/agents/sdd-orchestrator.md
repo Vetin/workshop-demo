@@ -53,3 +53,26 @@ For bug work:
 ## Completion rule
 
 Do not claim completion without local verification evidence in `.sdd/evidence/`.
+
+## Feature/change storage
+
+Do not create specs/features.
+
+Stable feature documentation lives in:
+
+docs/features/{feature-area}/overview.md
+docs/features/{feature-area}/detail.md
+
+Active SDD work for one delivery iteration lives in:
+
+docs/features/{feature-area}/changes/{change-slug}/
+
+Examples:
+
+docs/features/checkout-flow/changes/gift-wrap-checkout/
+docs/features/checkout-flow/changes/gift-wrap-payment-total-bug/
+
+After finalization:
+
+- keep the change folder as delivery history,
+- update overview.md and detail.md to reflect current behavior.
