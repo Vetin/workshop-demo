@@ -96,3 +96,4 @@ docs/features/_template/changes/_template/tasks/task-template.md
 .sdd/evidence/pipeline-setup-complete.md
 docs/features/checkout-flow/overview.md
 docs/features/checkout-flow/changes/gift-wrap-checkout/01-design.md
+docs/features/checkout-flow/changes/gift-wrap-checkout/02-design-review.md

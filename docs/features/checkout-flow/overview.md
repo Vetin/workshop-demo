@@ -12,7 +12,7 @@ Users add items to a cart backed by Valkey (Redis-compatible). From the cart pag
 | cart | C# (.NET) | gRPC - stores/retrieves cart items in Valkey |
 | checkout | Go | gRPC - orchestrates the entire PlaceOrder flow |
 | product-catalog | Go | gRPC - resolves product prices per order item |
-| currency | unknown | gRPC - converts prices and shipping cost to user currency |
+| currency | C++ | gRPC - converts prices and shipping cost to user currency |
 | shipping | Rust | HTTP REST - quotes shipping cost and generates tracking IDs |
 | payment | Node.js | gRPC - validates and charges the credit card |
 | email | Ruby | HTTP/Sinatra - sends confirmation email |
