@@ -66,7 +66,7 @@ Conditional:
 - `distributed-flow-reviewer` — if cross-service call changes are planned
 - `frontend-ui-kit-reviewer` — if frontend changes are in the plan
 
-External review (Codex `impl-plan-codex-review`):
+External review (Codex `impl-plan-codex-review-subagent`):
 - for plans with 4+ tasks, cross-service changes, or security/telemetry changes.
 
 ## What reviewers check

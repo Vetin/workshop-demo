@@ -1,6 +1,6 @@
 ---
-description: Run final automatic, agentic browser/manual, E2E, trace, and documentation verification before claiming completion.
-argument-hint: '[feature-area/change-slug]'
+description: Verify an SDD change before user review: run automatic checks, start app if needed, perform browser verification, promote cases to E2E, run E2E, loop on failures, and write evidence.
+argument-hint: "[feature-area/change-slug] [--stage automatic|browser|e2e|final] [--resume]"
 allowed-tools: Read, Grep, Glob, Bash, Edit, Write, Agent
 ---
 
@@ -12,253 +12,290 @@ $ARGUMENTS
 
 Expected format:
 
+```text
 {feature-area}/{change-slug}
 
 Example:
 
 checkout-flow/gift-wrap-checkout
+Purpose
 
-## Purpose
+Prove the change works before user review or finalization.
 
-Prove the feature or bug fix works before claiming completion or giving the code to user review.
+Default command:
 
-Verification order:
+/sdd-verify {feature-area}/{change-slug}
 
-1. Automatic verification commands.
-2. Agentic browser manual verification.
-3. E2E test promotion from passed manual cases.
-4. Run E2E tests.
-5. Final verification reviewers.
+runs the full verification pipeline.
 
-## Paths
+Stage flags are only for demo/debug:
 
-Base:
+--stage automatic
+--stage browser
+--stage e2e
+--stage final
+--resume
+Required paths
+
+Change folder:
 
 docs/features/{feature-area}/changes/{change-slug}/
 
-Manual cases:
+Expected inputs:
 
+01-design.md
+03-implementation-plan.md
+tasks/*.evidence.md
+verification/manual-test-cases.md
+
+Expected outputs:
+
+verification/browser-manual-verification-report.md
+verification/e2e-test-plan.md
+verification/final-verification-report.md
+.sdd/evidence/latest-verification-pass
+Read first
+
+Read these before acting:
+
+docs/features/{feature-area}/overview.md
+docs/features/{feature-area}/detail.md
+docs/features/{feature-area}/changes/{change-slug}/01-design.md
+docs/features/{feature-area}/changes/{change-slug}/03-implementation-plan.md
 docs/features/{feature-area}/changes/{change-slug}/verification/manual-test-cases.md
 
-Browser verification report:
+docs/ai-knowledge/testing/detail.md
+docs/ai-knowledge/local-runbook/detail.md
+docs/ai-knowledge/validation/browser-verification.md
+docs/ai-knowledge/validation/sdd-evidence-format.md
+docs/ai-knowledge/validation/sdd-agent-routing.md
+docs/ai-knowledge/validation/sdd-human-escalation.md
 
-docs/features/{feature-area}/changes/{change-slug}/verification/browser-manual-verification-report.md
+Use this method reference:
 
-E2E test plan:
+.claude/skills/_upstream-superpowers/verification-before-completion.md
+Core rule
 
-docs/features/{feature-area}/changes/{change-slug}/verification/e2e-test-plan.md
+Do not claim completion without fresh evidence.
 
-Final verification report:
+For every claim:
 
-docs/features/{feature-area}/changes/{change-slug}/verification/final-verification-report.md
+Identify what proves it.
+Run the command or browser check.
+Read the result.
+Record evidence.
+Only then claim pass/fail.
+Full verification flow
 
-## Use method reference
+When no --stage flag is provided, run all stages:
 
-- .claude/skills/\_upstream-superpowers/verification-before-completion.md
+1. Automatic checks
+2. Browser/manual verification
+3. E2E promotion
+4. E2E execution
+5. Final verification review
+6. Final verification report
 
-## Read first
+Continue automatically until verification passes or a real human decision is required.
 
-- docs/features/{feature-area}/overview.md
-- docs/features/{feature-area}/detail.md
-- docs/features/{feature-area}/changes/{change-slug}/01-design.md
-- docs/features/{feature-area}/changes/{change-slug}/03-implementation-plan.md
-- docs/features/{feature-area}/changes/{change-slug}/tasks/\*.evidence.md
-- docs/features/{feature-area}/changes/{change-slug}/verification/manual-test-cases.md
-- docs/ai-knowledge/testing/detail.md
-- docs/ai-knowledge/validation/sdd-evidence-format.md
-- docs/ai-knowledge/validation/browser-verification.md
-- docs/ai-knowledge/frontend/overview.md
-- docs/ai-knowledge/ui-kit/overview.md
+Do not ask “should I continue?”
 
-## Verification rule
-
-Before claiming anything is complete:
-
-1. Identify what command or browser check proves it.
-2. Run the command/check fresh.
-3. Read the output.
-4. Check exit code or observed result.
-5. Record evidence.
-6. Only then state the claim.
-
-## Stage 1 — Automatic verification
+Stage 1 — Automatic checks
 
 Run relevant checks from:
 
-- docs/ai-knowledge/testing/detail.md
-- 03-implementation-plan.md
-- task evidence files
+docs/ai-knowledge/testing/detail.md
+03-implementation-plan.md
+tasks/*.evidence.md
 
-Possible checks:
+Examples:
 
-- frontend tests
-- integration tests
-- service-specific tests
-- trace-based tests
-- contract checks
-- lint/typecheck/build
+frontend tests
+integration tests
+service-specific tests
+contract checks
+trace-based tests
+lint/typecheck/build
 
 Record:
 
-- command,
-- exit code,
-- summarized output,
-- evidence path.
+command
+exit code
+summary
+evidence path
 
-If a check fails:
+If automatic checks fail, classify:
 
-1. Create follow-up task under tasks/.
-2. Fix through /sdd-execute.
-3. Re-run failed check.
+application bug
+test bug
+environment issue
+flaky test
+missing setup
 
-## Stage 2 — Agentic browser manual verification
+Then:
 
-Run browser-manual-verifier.
+application/test bug → create fix task, fix via /sdd-execute loop, rerun failed check
+environment issue → try runbook, ask user only if unresolved
+flaky test → stabilize test or document blocker
+Stage 2 — Browser/manual verification
 
-The browser verifier must use:
+Run:
 
-Default:
+browser-manual-verifier
 
-- agent-browser CLI
+The verifier must:
+
+Read the local runbook.
+Check if the app is running.
+Start the app if needed.
+Wait for readiness.
+Run manual browser cases.
+Capture screenshots/snapshots.
+Write browser verification report.
+
+Default browser tool:
+
+agent-browser
 
 Allowed alternatives:
 
-- Playwright MCP
-- Chrome DevTools MCP
+Playwright MCP
+Chrome DevTools MCP
 
-The verifier must execute:
-
-docs/features/{feature-area}/changes/{change-slug}/verification/manual-test-cases.md
-
-The verifier must write:
+Browser report path:
 
 docs/features/{feature-area}/changes/{change-slug}/verification/browser-manual-verification-report.md
 
 If browser verification fails:
 
-1. Create follow-up task under tasks/.
-2. Fix through /sdd-execute.
-3. Re-run the failed manual case.
-4. Do not proceed to E2E promotion until relevant manual cases pass.
+capture evidence
+create fix task
+fix via /sdd-execute loop
+rerun affected automatic checks
+rerun failed browser case
 
 If browser verification is blocked:
 
-1. Record exact blocker.
-2. Record required command or environment setup.
-3. Ask user only if the environment cannot be started by the harness.
+record blocker
+record failing command/logs
+try runbook fix
+ask user only if harness cannot resolve environment issue
+Stage 3 — E2E promotion
 
-## Stage 3 — Promote manual cases into E2E tests
+After browser verification passes, run:
 
-After browser manual verification passes, run e2e-test-author.
+e2e-test-author
 
-The E2E author reads:
+It must decide which passed manual cases deserve E2E coverage.
 
-- manual-test-cases.md
-- browser-manual-verification-report.md
-- implementation plan
-- testing docs
-
-It writes:
+Write:
 
 docs/features/{feature-area}/changes/{change-slug}/verification/e2e-test-plan.md
 
-It should add or update E2E tests when:
+Add E2E tests when behavior is:
 
-- behavior is user-visible,
-- behavior maps to acceptance criteria,
-- behavior crosses service boundaries,
-- behavior is regression-prone,
-- manual verification found a bug during development.
+user-visible
+acceptance-criteria-driven
+cross-service
+regression-prone
+previously failed during manual verification
 
-It should not add E2E tests when:
+Do not add E2E tests when:
 
-- lower-level tests are more appropriate,
-- selectors are unstable,
-- local environment cannot support the case,
-- the E2E would be flaky without app changes.
+lower-level tests are better
+selectors are unstable
+local environment cannot support it
+test would be flaky
 
-If E2E tests are not added, e2e-test-plan.md must explain why.
+Skipped E2E coverage requires rationale.
 
-## Stage 4 — Run E2E tests
+Stage 4 — E2E execution
 
-Run relevant E2E command from docs/ai-knowledge/testing/detail.md.
+Run the relevant E2E command from:
 
-If no suitable E2E command exists:
+docs/ai-knowledge/testing/detail.md
 
-1. Record this in e2e-test-plan.md.
-2. Record proposed future setup.
-3. Continue only if other verification covers the behavior.
+If E2E fails, classify:
 
-If E2E tests fail:
+application bug
+E2E test bug
+selector instability
+timing/flakiness
+missing setup
+environment issue
 
-1. Create follow-up task.
-2. Fix through /sdd-execute.
-3. Re-run E2E tests.
-4. Re-run browser manual verification for affected cases.
+Then fix the correct layer:
 
-## Stage 5 — E2E review
-
-Run e2e-test-reviewer.
-
-The reviewer checks:
-
-- E2E cases match manual verification,
-- tests cover acceptance criteria,
-- tests use stable selectors or roles,
-- tests are not too flaky or too broad,
-- commands were run or waiver is explicit.
-
-Fix accepted findings before continuing.
-
-## Stage 6 — Final verification reviewers
+application bug → fix via /sdd-execute, rerun browser case and E2E
+test bug → fix E2E, run e2e-test-reviewer, rerun E2E
+flaky test → stabilize selectors/waits/setup, rerun E2E
+environment issue → use runbook, ask user only if unresolved
 
 Run:
 
-- spec-compliance-reviewer
-- test-verification-reviewer
-- docs-consistency-reviewer
+e2e-test-reviewer
 
-Add conditional reviewers if relevant:
+before accepting new or changed E2E tests.
 
-- frontend-ui-kit-reviewer
-- distributed-flow-reviewer
-- service-contract-reviewer
-- observability-reviewer
-- security-data-leak-reviewer
+Stage 5 — Final verification review
 
-## Final verification report
+Run:
+
+spec-compliance-reviewer
+test-verification-reviewer
+docs-consistency-reviewer
+
+Add conditional reviewers from:
+
+docs/ai-knowledge/validation/sdd-agent-routing.md
+
+Examples:
+
+frontend-ui-kit-reviewer
+distributed-flow-reviewer
+service-contract-reviewer
+observability-reviewer
+security-data-leak-reviewer
+
+Fix accepted findings before final report.
+
+Stage 6 — Final report
 
 Create:
 
 docs/features/{feature-area}/changes/{change-slug}/verification/final-verification-report.md
 
-The report must include:
+Report must include:
 
-1. Automatic checks run.
-2. Browser manual verification results.
-3. Screenshots/snapshots collected.
-4. E2E tests added or skipped.
-5. E2E commands run.
-6. Final reviewer results.
-7. Verification gaps.
-8. Waivers, if any.
-9. Remaining risks.
-
-## Evidence marker
+automatic checks run
+browser verification result
+app startup evidence
+screenshots/snapshots
+E2E tests added or skipped
+E2E command results
+final reviewer results
+waivers
+remaining risks
+follow-up tasks created and resolved
 
 If verification passes, create:
 
 .sdd/evidence/latest-verification-pass
+Output
 
-## Output
+Return:
 
-At the end, provide:
+verification status
+final verification report path
+browser report path
+E2E test plan path
+commands run
+follow-up tasks created/resolved
+remaining risks
+recommended next command
 
-- verification report path,
-- browser verification report path,
-- E2E test plan path,
-- commands run,
-- pass/fail summary,
-- recommended next command:
+Recommended next command after success:
 
-  /sdd-finalize {feature-area}/{change-slug}
+/sdd-finalize {feature-area}/{change-slug}
+
+```

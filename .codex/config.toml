@@ -1,0 +1,42 @@
+# Codex profile definitions for the OpenTelemetry Demo workshop.
+#
+# These profiles configure the Codex reviewers used by the SDD pipeline
+# (design-plan-codex-review-subagent and impl-plan-codex-review-subagent skills).
+#
+# SETUP: merge these profiles into ~/.codex/config.toml, adjusting the
+# PROJECT_ROOT prefix to wherever this repo is checked out:
+#
+#   cat .codex/config.toml >> ~/.codex/config.toml
+#
+# Or run the helper:
+#   .codex/setup.sh /path/to/this/repo
+
+[profiles.codex-review-architecture]
+model = "gpt-5.3-codex"
+model_reasoning_effort = "xhigh"
+model_instructions_file = "/Users/egormasnankin/work/ai-workshop/opentelemetry-demo/.claude/skills/design-plan-codex-review-subagent/architecture-reviewer-prompt.md"
+
+[profiles.codex-review-feasibility]
+model = "gpt-5.3-codex"
+model_reasoning_effort = "xhigh"
+model_instructions_file = "/Users/egormasnankin/work/ai-workshop/opentelemetry-demo/.claude/skills/design-plan-codex-review-subagent/feasibility-reviewer-prompt.md"
+
+[profiles.codex-review-design-generalist]
+model = "gpt-5.3-codex"
+model_reasoning_effort = "xhigh"
+model_instructions_file = "/Users/egormasnankin/work/ai-workshop/opentelemetry-demo/.claude/skills/design-plan-codex-review-subagent/design-generalist-reviewer-prompt.md"
+
+[profiles.codex-review-structure]
+model = "gpt-5.3-codex"
+model_reasoning_effort = "xhigh"
+model_instructions_file = "/Users/egormasnankin/work/ai-workshop/opentelemetry-demo/.claude/skills/impl-plan-codex-review-subagent/structure-reviewer-prompt.md"
+
+[profiles.codex-review-correctness]
+model = "gpt-5.3-codex"
+model_reasoning_effort = "xhigh"
+model_instructions_file = "/Users/egormasnankin/work/ai-workshop/opentelemetry-demo/.claude/skills/impl-plan-codex-review-subagent/correctness-reviewer-prompt.md"
+
+[profiles.codex-review-impl-generalist]
+model = "gpt-5.3-codex"
+model_reasoning_effort = "xhigh"
+model_instructions_file = "/Users/egormasnankin/work/ai-workshop/opentelemetry-demo/.claude/skills/impl-plan-codex-review-subagent/impl-generalist-reviewer-prompt.md"

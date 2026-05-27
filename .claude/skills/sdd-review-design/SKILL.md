@@ -57,7 +57,7 @@ docs/features/{feature-area}/changes/{change-slug}/02-design-review.md
 - `service-contract-reviewer` — if proto or HTTP API changes are proposed
 - `distributed-flow-reviewer` — if cross-service call changes are proposed
 - `frontend-ui-kit-reviewer` — if frontend UI changes are proposed
-- External reviewer (Codex `design-plan-codex-review`) — for complex designs
+- External reviewer (Codex `design-plan-codex-review-subagent`) — for complex designs
   involving security, telemetry, or cross-service flows
 
 ## Review process
