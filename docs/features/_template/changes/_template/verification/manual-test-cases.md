@@ -1,21 +1,50 @@
 # Manual Verification Cases
 
-## Case V-01
+These cases are executed by browser-manual-verifier during /sdd-verify.
 
-### Goal
+## Browser tool preference
 
-### Preconditions
+Default:
+- agent-browser
 
-### Steps
+Allowed alternatives:
+- Playwright MCP
+- Chrome DevTools MCP
 
-1.
-2.
-3.
+## Required local environment
 
-### Expected result
+Document how the app should be running before verification.
 
-### Evidence
+Example:
 
-### Status
+```bash
+docker compose up
 
-pass | fail | blocked
+or:
+
+make start
+Case V-01
+Goal
+Acceptance criteria covered
+AC-__
+URL
+
+http://localhost:8080/...
+
+Preconditions
+local app is running
+test/demo data exists
+no real credentials or private data are used
+Steps
+Expected result
+Evidence to collect
+browser snapshot
+screenshot
+console/network notes if relevant
+Should become E2E test?
+
+yes | no | maybe
+
+Status
+
+not-run | pass | fail | blocked

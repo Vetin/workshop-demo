@@ -86,3 +86,27 @@ A task is complete only when:
 - code-quality-reviewer passed,
 - docs-consistency-reviewer passed,
 - task evidence file was written.
+
+## Final verification loop
+
+After all implementation tasks pass review:
+
+1. Run /sdd-verify.
+2. Run automatic verification commands.
+3. Run browser-manual-verifier.
+4. Convert passed manual verification cases into E2E tests using e2e-test-author.
+5. Run E2E tests.
+6. Run e2e-test-reviewer.
+7. Run final verification reviewers.
+8. Only then proceed to /sdd-finalize.
+
+Manual browser verification happens before final user review.
+
+E2E promotion happens after manual verification and before final review.
+
+Do not claim completion if:
+
+- browser verification failed,
+- E2E tests failed,
+- E2E tests were skipped without explicit rationale,
+- final verification report is missing.

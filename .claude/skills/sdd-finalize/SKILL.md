@@ -1,7 +1,7 @@
 ---
 description: Finalize SDD iteration by updating feature docs, AI knowledge docs,
   learning logs, evidence markers, and final report.
-argument-hint: "[feature-area/change-slug]"
+argument-hint: '[feature-area/change-slug]'
 allowed-tools: Read, Grep, Glob, Bash, Edit, Write, Agent
 ---
 
@@ -40,18 +40,15 @@ docs/features/{feature-area}/changes/{change-slug}/final-report.md
 
 ## Required before finalization
 
-All of these must be true:
-
-- All planned tasks are marked complete.
-- All task evidence files exist under `tasks/*.evidence.md`.
-- `spec-compliance-reviewer` passed on all tasks.
-- `observability-reviewer` passed.
-- `security-data-leak-reviewer` passed.
-- `verification/final-verification-report.md` exists with verdict `pass`
-  or user explicitly waived verification with documented rationale.
-- `docs-consistency-reviewer` passed.
-
-If any condition is not met, return the reason and do not finalize.
+- all planned tasks complete,
+- all task evidence files exist,
+- required task reviewers passed,
+- automatic verification passed or user explicitly waived it,
+- browser manual verification passed or user explicitly waived it,
+- E2E test promotion completed,
+- E2E tests passed or a documented waiver exists,
+- e2e-test-reviewer passed,
+- docs consistency review passed.
 
 ## Read
 
@@ -59,12 +56,12 @@ If any condition is not met, return the reason and do not finalize.
 - docs/features/{feature-area}/detail.md
 - docs/features/{feature-area}/changes/{change-slug}/01-design.md
 - docs/features/{feature-area}/changes/{change-slug}/03-implementation-plan.md
-- docs/features/{feature-area}/changes/{change-slug}/tasks/*.md
-- docs/features/{feature-area}/changes/{change-slug}/tasks/*.evidence.md
+- docs/features/{feature-area}/changes/{change-slug}/tasks/\*.md
+- docs/features/{feature-area}/changes/{change-slug}/tasks/\*.evidence.md
 - docs/features/{feature-area}/changes/{change-slug}/verification/final-verification-report.md
-- docs/ai-knowledge/services/* (for affected services)
-- docs/ai-knowledge/communication/* (if communication changed)
-- docs/ai-knowledge/observability/* (if telemetry changed)
+- docs/ai-knowledge/services/\* (for affected services)
+- docs/ai-knowledge/communication/\* (if communication changed)
+- docs/ai-knowledge/observability/\* (if telemetry changed)
 - docs/ai-knowledge/validation/sdd-evidence-format.md
 
 ## Update stable feature docs
@@ -94,6 +91,7 @@ Run `knowledge-curator` to update:
 Then run `docs-consistency-reviewer` to verify the knowledge-curator output.
 
 If docs-consistency-reviewer finds issues:
+
 - re-dispatch knowledge-curator, not the implementer.
 
 ## Run finalization reviewers
@@ -122,6 +120,9 @@ Include:
 - user decisions made during the change,
 - known limitations,
 - follow-up work items,
+- browser manual verification evidence,
+- E2E tests added or skipped with rationale,
+- E2E test command results,
 - final status: `complete` | `incomplete` | `blocked`.
 
 ## Create evidence markers

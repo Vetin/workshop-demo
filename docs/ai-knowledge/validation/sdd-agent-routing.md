@@ -102,3 +102,31 @@ Run `knowledge-curator` when:
 - `docs/ai-knowledge/` changed,
 - `docs/features/` changed,
 - a self-learning update was proposed.
+
+## Verification-stage routing
+
+During /sdd-verify:
+
+Always run:
+- browser-manual-verifier when the change affects user-visible UI or browser-observable behavior.
+- e2e-test-author after manual browser verification passes.
+- e2e-test-reviewer after E2E tests are added or planned.
+- test-verification-reviewer before final verification report.
+- docs-consistency-reviewer before finalization.
+
+Run frontend-ui-kit-reviewer when:
+- UI components changed,
+- local UI-kit changed,
+- Figma mapping changed,
+- styling or design behavior changed.
+
+Run distributed-flow-reviewer when:
+- browser behavior depends on multiple services,
+- checkout/payment/shipping/email flow changed,
+- frontend API behavior changed.
+
+Run observability-reviewer when:
+- traces, metrics, logs, or telemetry attributes changed.
+
+Run security-data-leak-reviewer when:
+- user-entered text appears in UI, email, logs, events, or telemetry.
