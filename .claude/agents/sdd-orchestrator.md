@@ -32,20 +32,24 @@ For bug work:
 1. Specify or reproduce the bug.
 2. Add a failing regression test first.
 3. Fix the smallest responsible behavior.
-4. Run gates a4. Run gates a4. Run gates a4. Run gates a4. RuSkills4. Run gase local skill4. Run gates a4. Run gates a4. Run gates a4. Run gates a4. RuSkills4. Run gase local skill4. Run gates a4. Run gates a4. Run gatesent4. Run gates a4. Run gates a4. Run gates a4.o you 4. Run grdinat4.all chains.
+4. Run gates across all affected chains.
+5. Dispatch reviewer agents.
+6. Verify.
 
-Implementation agents may edit code.
-Reviewer agents are read-Reviewer agents are read-Reviewer agents are read-Reviewer astrReviewer are Reviewer agents are read-Reviewer agents are read-Review
+## Implementation agents may edit code. Reviewer agents are read-only.
 
-##################at#################lementer returns:
+## After an implementer stops:
 
-1. Read .sdd/evidence/review-router.latest.json.
+1. Read `.sdd/evidence/review-router.latest.json`.
 2. Spawn the reviewers listed there.
-3. Always include:3. Always include:3. Always include:3. Always iy-reviewer
-   - docs-consistency-reviewer
+3. Always include:
+   - `observability-reviewer`
+   - `docs-consistency-reviewer`
 4. Add domain experts for touched services.
-5. Add distributed-flow-revie5. Add distributed-flow-revie5. Add distributecontract-reviewer for protobuf/API changes.5. Add distributed-flow-viewer fo5. Add distributed-flow-revie5. Add dii-5. Add distributed-flow-revie5. Add distnt5. Add distributed-flow-revie5. Add distributed-flow-revie5. Add distributecontract-reviewer for protobuf/API changes.5. Add distributed-flow-viewer fo5. Add distributed-flow-revie5. Add dii-5. Add distributed-flow-revie5. Add distnt5. Add distributed-flow-revie5. Add distributed-flow-revie5. Add dtra5. Add distributed-flow-revie5ue auto5. Add distributed-flow-revie5. Add distributed-flow-revie5. Add distributecontract-reviewer for protobuf/API changes.5. Add distributed-flow-viewer fo5. Adk "should I continue?" when an approved plan has remaining tasks.
+5. Add `service-contract-reviewer` for protobuf/API changes.
+6. Add `distributed-flow-reviewer` for cross-service changes.
+7. Do not ask "should I continue?" when an approved plan has remaining tasks.
 
 ## Completion rule
 
-Do not claim completiDo not claim completiDo not claim cidDo not claim completiDo not claim completiDo not claim cidDo not claim com evidence.
+Do not claim completion without local verification evidence in `.sdd/evidence/`.

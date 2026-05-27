@@ -1,52 +1,25 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "agent": "sdd-orchestrator",
-  "permissions": {
-    "allow": [
-      "Agent",
-      "Read",
-      "Grep",
-      "Glob",
-      "Edit",
-      "Write",
-      "Bash(git status *)",
-      "Bash(git diff *)",
-      "Bash(git diff --name-only *)",
-      "Bash(git rev-parse *)",
-      "Bash(find *)",
-      "Bash(grep *)",
-      "Bash(ls *)",
-      "Bash(cat *)",
-      "Bash(make *)",
-      "Bash(docker compose *)",
-      "Bash(npm *)",
-      "Bash(go test *)",
-      "Bash(dotnet test *)",
-      "Bash(cargo test *)",
-      "Bash(pytest *)",
-      "Bash(bundle exec *)",
-      "Bash(scripts/ai/*)",
-      "Bash(codex exec *)"
-    ],
-    "ask": [
-      "Bash(git push *)",
-      "Bash(npm install *)",
-      "Bash(docker compose up *)"
-    ],
-    "deny": [
-      "Read(./.env)",
-      "Read(./.env.*)",
-      "Read(./secrets/**)",
-      "Bash(git push --force*)",
-      "Bash(*--no-verify*)",
-      "Bash(rm -rf / *)"
-      "Ba,
   "hooks": {
-    "PreToolUs    "PreToolUs    "PreToolUs    "PreToolUs    "PreToolUs    "PreTool  {    "PreToolUs    "PreToolUs ",
-            "command": "python3 .            "da            an                                       }
-           "Post           "Post                       "Post        
-                                                                                     ".claud                 -fast           h",
-            "timeout": 120
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/dangerous-command-gate.py"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/post-edit-fast-feedback.sh"
           }
         ]
       },
@@ -55,20 +28,20 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/hooks/agent-return-review-context.py",
-                                    }
+            "command": "python3 .claude/hooks/agent-return-review-context.py"
+          }
         ]
       }
     ],
-    ],
-
-]
- nt nt nt nt nt nt nt nt nt " nt nt nt nt nt nt nt ntjs-implementer|frontend-ui-kit-implementer|pro nt nt nt ntim nt nt nt nt-service-i nt nt nt nt nt ntservic nt nt nt nt nt nt nt nt nce nt nt nt nt nt nt nt nt nt " ne- nt nt nt nt nt nt ntice-impl nt nt nt nt nt nt nt mpl nt nt nruby-service-implementer|php-service-implementer|cpp-service-implementer|infra-config-implementer",
+    "Stop": [
+      {
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/hooks/subagent-stop-quality-gate.p            "command": "python3 .claude/hooks/subagent-stop-qualit,
-                                                                                                                               ks/                     ",
-            "timeout": 60
+            "command": "python3 .claude/hooks/root-stop-sdd-gate.py"
           }
-                             
+        ]
+      }
+    ]
+  }
+}

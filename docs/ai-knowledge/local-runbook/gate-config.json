@@ -1,0 +1,403 @@
+{
+  "gateConfigurations": {
+    "fast": {
+      "name": "Fast Gate (2-3 minutes)",
+      "description": "Quick validation for pre-commit and PR checks",
+      "duration": "2-3 minutes",
+      "cost": "low",
+      "stages": [
+        {
+          "name": "Spell Check",
+          "command": "make misspell",
+          "timeout": 30,
+          "critical": true,
+          "description": "Verify spelling in documentation"
+        },
+        {
+          "name": "Markdown Lint",
+          "command": "make markdownlint",
+          "timeout": 60,
+          "critical": true,
+          "description": "Validate markdown formatting"
+        },
+        {
+          "name": "YAML Lint",
+          "command": "make yamllint",
+          "timeout": 60,
+          "critical": true,
+          "description": "Validate YAML files"
+        },
+        {
+          "name": "License Headers",
+          "command": "make checklicense",
+          "timeout": 60,
+          "critical": false,
+          "description": "Verify license headers on source files"
+        },
+        {
+          "name": "Link Check",
+          "command": "make checklinks",
+          "timeout": 120,
+          "critical": false,
+          "description": "Validate documentation links"
+        }
+      ],
+      "failFast": true,
+      "recommendedFor": [
+        "Pre-commit validation",
+        "Pull request checks",
+        "Quick feedback loops",
+        "Documentation changes"
+      ]
+    },
+    "medium": {
+      "name": "Medium Gate (5-8 minutes)",
+      "description": "Comprehensive validation for feature branches and pre-merge",
+      "duration": "5-8 minutes",
+      "cost": "medium",
+      "stages": [
+        {
+          "name": "All Fast Checks",
+          "command": "make check",
+          "timeout": 180,
+          "critical": true,
+          "description": "Run all linting and validation checks"
+        },
+        {
+          "name": "Protobuf Generation",
+          "command": "make docker-generate-protobuf",
+          "timeout": 300,
+          "critical": true,
+          "description": "Regenerate protobuf bindings"
+        },
+        {
+          "name": "Clean Work Tree Check",
+          "command": "make check-clean-work-tree",
+          "timeout": 30,
+          "critical": true,
+          "description": "Verify no uncommitted protobuf changes"
+        },
+        {
+          "name": "Docker Image Build",
+          "command": "make build",
+          "timeout": 1200,
+          "critical": true,
+          "description": "Build all service Docker images"
+        }
+      ],
+      "failFast": true,
+      "requiresDocker": true,
+      "recommendedFor": [
+        "Feature branch validation",
+        "Pre-merge checks",
+        "Service code changes",
+        "Dockerfile modifications",
+        "Protobuf changes"
+      ]
+    },
+    "full": {
+      "name": "Full Gate (30-60 minutes)",
+      "description": "Complete validation including integration tests",
+      "duration": "30-60 minutes",
+      "cost": "high",
+      "stages": [
+        {
+          "name": "All Medium Checks",
+          "command": "make check && make docker-generate-protobuf && make build",
+          "timeout": 1800,
+          "critical": true,
+          "description": "Run linting, generation, and build"
+        },
+        {
+          "name": "Full Stack Startup",
+          "command": "make start",
+          "timeout": 300,
+          "critical": true,
+          "description": "Start complete OpenTelemetry demo stack"
+        },
+        {
+          "name": "Trace-Based Tests",
+          "command": "make run-tracetesting",
+          "timeout": 900,
+          "critical": true,
+          "description": "Run all service trace validation tests"
+        },
+        {
+          "name": "Frontend Tests",
+          "command": "make run-tests",
+          "timeout": 900,
+          "critical": false,
+          "description": "Run frontend and integration tests"
+        },
+        {
+          "name": "Cleanup",
+          "command": "make stop",
+          "timeout": 60,
+          "critical": false,
+          "description": "Stop and clean up resources"
+        }
+      ],
+      "failFast": false,
+      "requiresDocker": true,
+      "recommendedFor": [
+        "Release preparation",
+        "Major feature validation",
+        "After code review approval",
+        "Before merging to main",
+        "Performance validation"
+      ]
+    }
+  },
+  "commands": {
+    "full_test_commands": [
+      "make run-tests",
+      "make run-tracetesting"
+    ],
+    "frontend_test_commands": [
+      "cd src/frontend && npm run cy:open",
+      "docker-compose -f docker-compose-tests.yml run frontendTests"
+    ],
+    "backend_integration_test_commands": [
+      "make run-tracetesting",
+      "make run-tracetesting SERVICES_TO_TEST=ad",
+      "make run-tracetesting SERVICES_TO_TEST=cart",
+      "make run-tracetesting SERVICES_TO_TEST=checkout",
+      "make run-tracetesting SERVICES_TO_TEST=currency",
+      "make run-tracetesting SERVICES_TO_TEST=email",
+      "make run-tracetesting SERVICES_TO_TEST=payment",
+      "make run-tracetesting SERVICES_TO_TEST=product-catalog",
+      "make run-tracetesting SERVICES_TO_TEST=product-reviews",
+      "make run-tracetesting SERVICES_TO_TEST=recommendation",
+      "make run-tracetesting SERVICES_TO_TEST=shipping"
+    ],
+    "trace_based_test_commands": [
+      "make run-tracetesting",
+      "docker-compose -f docker-compose-tests.yml run traceBasedTests"
+    ],
+    "service_specific_commands": {
+      "frontend": [
+        "cd src/frontend && npm run dev",
+        "cd src/frontend && npm run build",
+        "cd src/frontend && npm start",
+        "cd src/frontend && npm run lint",
+        "cd src/frontend && npm run grpc:generate"
+      ],
+      "payment": [
+        "cd src/payment && npm start"
+      ],
+      "react_native_app": [
+        "cd src/react-native-app && npm start",
+        "cd src/react-native-app && npm run android",
+        "cd src/react-native-app && npm run ios",
+        "cd src/react-native-app && npm run web",
+        "cd src/react-native-app && npm test",
+        "cd src/react-native-app && npm run lint"
+      ],
+      "ad_service": [
+        "cd src/ad && gradle build"
+      ]
+    },
+    "build_commands": [
+      "make build",
+      "make build-and-push",
+      "make build-multiplatform",
+      "make build-multiplatform-and-push",
+      "make clean-images"
+    ],
+    "formatting_and_linting_commands": [
+      "make check",
+      "make misspell",
+      "make misspell-correction",
+      "make markdownlint",
+      "make yamllint",
+      "make checklicense",
+      "make addlicense",
+      "make checklinks",
+      "make fix"
+    ],
+    "expensive_commands": [
+      {
+        "command": "make build",
+        "duration": "10-20 minutes",
+        "reason": "Rebuilds all 20+ service Docker images"
+      },
+      {
+        "command": "make build-multiplatform",
+        "duration": "20-40 minutes",
+        "reason": "Builds for multiple architectures (amd64, arm64)"
+      },
+      {
+        "command": "make build-multiplatform-and-push",
+        "duration": "25-45 minutes",
+        "reason": "Builds multiplatform and pushes to registry"
+      },
+      {
+        "command": "make run-tests",
+        "duration": "10-15 minutes",
+        "reason": "Runs frontend tests and all trace-based tests"
+      },
+      {
+        "command": "make run-tracetesting",
+        "duration": "8-12 minutes",
+        "reason": "Validates traces for all 11 services"
+      }
+    ]
+  },
+  "services": {
+    "available_services": [
+      "accounting",
+      "ad",
+      "cart",
+      "checkout",
+      "currency",
+      "email",
+      "flagd",
+      "flagd-ui",
+      "fraud-detection",
+      "frontend",
+      "frontend-proxy",
+      "grafana",
+      "image-provider",
+      "jaeger",
+      "kafka",
+      "llm",
+      "load-generator",
+      "opensearch",
+      "otel-collector",
+      "payment",
+      "postgresql",
+      "product-catalog",
+      "product-reviews",
+      "prometheus",
+      "quote",
+      "recommendation",
+      "shipping",
+      "valkey-cart"
+    ],
+    "services_with_trace_tests": [
+      "ad",
+      "cart",
+      "checkout",
+      "currency",
+      "email",
+      "frontend",
+      "payment",
+      "product-catalog",
+      "product-reviews",
+      "recommendation",
+      "shipping"
+    ],
+    "service_languages": {
+      "Go": [
+        "cart",
+        "checkout",
+        "currency",
+        "product-catalog"
+      ],
+      "Python": [
+        "email",
+        "llm",
+        "load-generator",
+        "product-reviews",
+        "recommendation"
+      ],
+      "Java": [
+        "ad"
+      ],
+      "CSharp": [
+        "accounting",
+        "fraud-detection",
+        "quote"
+      ],
+      "Node.js": [
+        "frontend",
+        "payment"
+      ],
+      "Rust": [
+        "shipping"
+      ],
+      "TypeScript": [
+        "react-native-app"
+      ]
+    }
+  },
+  "stack_configurations": {
+    "full_stack": {
+      "command": "make start",
+      "docker_compose_file": "docker-compose.yml",
+      "services": 28,
+      "startup_time": "1-2 minutes",
+      "access_points": {
+        "demo_ui": "http://localhost:8080",
+        "jaeger": "http://localhost:8080/jaeger/ui",
+        "grafana": "http://localhost:8080/grafana/",
+        "load_generator": "http://localhost:8080/loadgen/",
+        "feature_flags": "http://localhost:8080/feature/"
+      }
+    },
+    "minimal_stack": {
+      "command": "make start-minimal",
+      "docker_compose_file": "docker-compose.minimal.yml",
+      "services": "reduced",
+      "startup_time": "30-60 seconds",
+      "use_case": "Local development, faster iteration"
+    },
+    "test_infrastructure": {
+      "command": "docker-compose -f docker-compose-tests.yml up",
+      "docker_compose_file": "docker-compose-tests.yml",
+      "includes": [
+        "frontendTests",
+        "traceBasedTests",
+        "tracetest-server",
+        "tracetest-postgres"
+      ]
+    }
+  },
+  "protobuf": {
+    "source_file": "pb/demo.proto",
+    "generation_commands": [
+      "make generate-protobuf",
+      "make docker-generate-protobuf",
+      "make clean"
+    ],
+    "generated_outputs": {
+      "go_checkout": "src/checkout/genproto/oteldemo/",
+      "go_product_catalog": "src/product-catalog/genproto/oteldemo/",
+      "python_recommendation": "src/recommendation/demo_pb2*",
+      "typescript_frontend": "src/frontend/protos/demo.ts"
+    }
+  },
+  "ci_cd": {
+    "workflows": [
+      {
+        "name": "checks.yml",
+        "trigger": "push to main, PR, manual",
+        "checks": [
+          "markdownlint",
+          "yamllint",
+          "misspell",
+          "checklicense",
+          "build_images"
+        ]
+      },
+      {
+        "name": "run-integration-tests.yml",
+        "trigger": "PR review approval",
+        "commands": [
+          "make build",
+          "docker system prune -f",
+          "make run-tracetesting"
+        ]
+      },
+      {
+        "name": "component-build-images.yml",
+        "trigger": "reusable workflow",
+        "checks": [
+          "protobuf generation",
+          "clean work tree",
+          "docker build matrix"
+        ]
+      }
+    ]
+  }
+}
