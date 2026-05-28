@@ -26,4 +26,6 @@ export enum CypressFields {
   ProductDescription = 'product-description',
   ProductQuantity = 'product-quantity',
   ProductAddToCart = 'product-add-to-cart',
+  GiftWrapCheckbox = 'gift-wrap-checkbox',
+  GiftMessageTextarea = 'gift-message-textarea',
 }

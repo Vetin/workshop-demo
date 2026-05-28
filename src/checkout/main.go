@@ -291,6 +291,9 @@ func (cs *checkout) PlaceOrder(ctx context.Context, req *pb.PlaceOrderRequest) (
 	span.SetAttributes(
 		attribute.String("app.user.id", req.UserId),
 		attribute.String("app.user.currency", req.UserCurrency),
+		// NOTE: set for BOTH true and false orders — required for trace filtering (AC-08/AC-09).
+		// This attribute is intentionally set before chargeCard so it appears even on failed-charge spans.
+		attribute.Bool("app.order.gift_wrap", req.GiftWrap),
 	)
 	logger.LogAttrs(
 		ctx,
@@ -313,7 +316,7 @@ func (cs *checkout) PlaceOrder(ctx context.Context, req *pb.PlaceOrderRequest) (
 
 	prep, err := cs.prepareOrderItemsAndShippingQuoteFromCart(ctx, req.UserId, req.UserCurrency, req.Address)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	span.AddEvent("prepared")
 
@@ -324,6 +327,36 @@ func (cs *checkout) PlaceOrder(ctx context.Context, req *pb.PlaceOrderRequest) (
 	for _, it := range prep.orderItems {
 		multPrice := money.MultiplySlow(it.Cost, uint32(it.GetItem().GetQuantity()))
 		total = money.Must(money.Sum(total, multPrice))
+	}
+
+	// Declare at function scope — BEFORE the if req.GiftWrap block so it remains
+	// in scope for OrderResult construction below.
+	var giftWrapCostLocalized *pb.Money
+
+	if req.GiftWrap {
+		giftWrapUSD := &pb.Money{Units: 5, Nanos: 0, CurrencyCode: "USD"}
+		var convertedFee *pb.Money
+		convertedFee, err = cs.convertCurrency(ctx, giftWrapUSD, req.UserCurrency)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert gift wrap fee: %w", err)
+		}
+		// money.Must panics on CurrencyCode mismatch. Safe here because convertCurrency
+		// returns Money with CurrencyCode = req.UserCurrency, matching the total accumulator.
+		// This follows the same pattern used for shipping/items.
+		total = money.Must(money.Sum(total, convertedFee))
+		giftWrapCostLocalized = convertedFee
+		span.AddEvent("gift_wrap_fee_applied")
+		// "gift_wrap_fee_applied" uses snake_case for workshop pedagogy — intentional deviation
+		// from existing single-word event names ("charged", "shipped").
+
+		// Set amount attribute — only when gift_wrap=true.
+		// Divisor 10_000_000 (10^7) converts nanos to cents: e.g. 990_000_000 nanos → 99 cents.
+		giftWrapAmount, _ := strconv.ParseFloat(
+			fmt.Sprintf("%d.%02d",
+				giftWrapCostLocalized.GetUnits(),
+				giftWrapCostLocalized.GetNanos()/10_000_000),
+			64)
+		span.SetAttributes(attribute.Float64("app.order.gift_wrap.amount", giftWrapAmount))
 	}
 
 	txID, err := cs.chargeCard(ctx, total, req.CreditCard)
@@ -354,6 +387,8 @@ func (cs *checkout) PlaceOrder(ctx context.Context, req *pb.PlaceOrderRequest) (
 		ShippingCost:       prep.shippingCostLocalized,
 		ShippingAddress:    req.Address,
 		Items:              prep.orderItems,
+		GiftWrap:           req.GiftWrap,
+		GiftWrapCost:       giftWrapCostLocalized, // nil when gift_wrap=false
 	}
 
 	shippingCostFloat, _ := strconv.ParseFloat(fmt.Sprintf("%d.%02d", prep.shippingCostLocalized.GetUnits(), prep.shippingCostLocalized.GetNanos()/1000000000), 64)
@@ -376,7 +411,11 @@ func (cs *checkout) PlaceOrder(ctx context.Context, req *pb.PlaceOrderRequest) (
 		slog.String("app.shipping.tracking.id", shippingTrackingID),
 	)
 
-	if err := cs.sendOrderConfirmation(ctx, req.Email, orderResult); err != nil {
+	effectiveGiftMessage := ""
+	if req.GiftWrap {
+		effectiveGiftMessage = req.GiftMessage
+	}
+	if err := cs.sendOrderConfirmation(ctx, req.Email, orderResult, effectiveGiftMessage); err != nil {
 		logger.Warn(fmt.Sprintf("failed to send order confirmation to %q: %+v", req.Email, err))
 	} else {
 		logger.Info(fmt.Sprintf("order confirmation email sent to %q", req.Email))
@@ -549,11 +588,15 @@ func (cs *checkout) chargeCard(ctx context.Context, amount *pb.Money, paymentInf
 	return paymentResp.GetTransactionId(), nil
 }
 
-func (cs *checkout) sendOrderConfirmation(ctx context.Context, email string, order *pb.OrderResult) error {
-	emailPayload, err := json.Marshal(map[string]interface{}{
+func (cs *checkout) sendOrderConfirmation(ctx context.Context, email string, order *pb.OrderResult, giftMessage string) error {
+	payload := map[string]interface{}{
 		"email": email,
 		"order": order,
-	})
+	}
+	if giftMessage != "" {
+		payload["gift_message"] = giftMessage
+	}
+	emailPayload, err := json.Marshal(payload)
 	if err != nil {
 		return fmt.Errorf("failed to marshal order to JSON: %+v", err)
 	}
@@ -568,7 +611,7 @@ func (cs *checkout) sendOrderConfirmation(ctx context.Context, email string, ord
 		return fmt.Errorf("failed POST to email service: expected 200, got %d", resp.StatusCode)
 	}
 
-	return err
+	return nil
 }
 
 func (cs *checkout) shipOrder(ctx context.Context, address *pb.Address, items []*pb.CartItem) (string, error) {

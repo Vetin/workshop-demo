@@ -233,6 +233,7 @@ message OrderItem { CartItem item = 1; Money cost = 2; }
 message OrderResult {
     string order_id = 1; string shipping_tracking_id = 2;
     Money shipping_cost = 3; Address shipping_address = 4; repeated OrderItem items = 5;
+    bool gift_wrap = 6; Money gift_wrap_cost = 7;
 }
 message SendOrderConfirmationRequest { string email = 1; OrderResult order = 2; }
 ```
@@ -260,6 +261,7 @@ Key messages:
 message PlaceOrderRequest {
     string user_id = 1; string user_currency = 2;
     Address address = 3; string email = 5; CreditCardInfo credit_card = 6;
+    bool gift_wrap = 7; string gift_message = 8;
 }
 message PlaceOrderResponse { OrderResult order = 1; }
 ```

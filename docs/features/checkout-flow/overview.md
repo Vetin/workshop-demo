@@ -4,6 +4,8 @@
 
 Users add items to a cart backed by Valkey (Redis-compatible). From the cart page they submit a checkout form with shipping address, email, and credit card. The checkout service orchestrates the full order: price resolution, shipping quote, payment, cart clearing, confirmation email, and a Kafka publish. On success the user sees an order confirmation page.
 
+Gift wrap is an optional add-on at checkout. When selected, a fixed $5 USD fee is applied and converted to the user's currency before being added to the order total. The user may optionally provide a gift message (free-text), which is included in the confirmation email but is never recorded in telemetry (see PII constraint below).
+
 ## Services involved
 
 | Service | Language | Role |
@@ -34,8 +36,9 @@ Users add items to a cart backed by Valkey (Redis-compatible). From the cart pag
 ## Telemetry
 
 - **Spans**: gRPC auto-instrumentation on all services; `otelhttp` on checkout's HTTP calls to shipping and email; manual `charge` span in payment; manual `send_email` span in email
-- **Span attributes**: `app.user.id`, `app.user.currency`, `app.order.id`, `app.order.amount`, `app.order.items.count`, `app.shipping.amount`, `app.shipping.tracking.id`, `app.payment.transaction.id`, `app.payment.card_type`, `app.loyalty.level`, `app.cart.items.count`
-- **Span events**: `"prepared"`, `"charged"`, `"shipped"` (checkout); `"Fetch cart"`, `"Empty cart"` (cart)
+- **Span attributes**: `app.user.id`, `app.user.currency`, `app.order.id`, `app.order.amount`, `app.order.items.count`, `app.shipping.amount`, `app.shipping.tracking.id`, `app.payment.transaction.id`, `app.payment.card_type`, `app.loyalty.level`, `app.cart.items.count`, `app.order.gift_wrap` (bool, always set on every PlaceOrder span), `app.order.gift_wrap.amount` (float64, set only when gift wrap is selected)
+- **Span events**: `"prepared"`, `"charged"`, `"shipped"` (checkout); `"Fetch cart"`, `"Empty cart"` (cart); `"gift_wrap_fee_applied"` (checkout, emitted only when gift wrap is selected)
+- **PII constraint**: `giftMessage` is personal text and must never appear in any span attribute, span event, log body field, metric label, or OTLP export across any service.
 - **Kafka producer span**: `messaging.system=kafka`, `messaging.operation=publish`, `messaging.kafka.producer.success`, `messaging.kafka.producer.duration_ms`
 - **Metrics**: `app.payment.transactions` counter (payment service, labelled by currency)
 - **Logs**: structured logs at each checkout step with order/shipping/payment IDs
@@ -55,6 +58,10 @@ Users add items to a cart backed by Valkey (Redis-compatible). From the cart pag
 - `src/frontend/pages/api/cart.ts`
 - `src/frontend/pages/api/checkout.ts`
 - `src/frontend/components/Cart/CartDetail.tsx`
+- `src/frontend/components/CartItems/CartItems.tsx`
+- `src/frontend/components/CheckoutForm/CheckoutForm.tsx`
+- `src/frontend/components/CheckoutForm/GiftMessage.styled.ts`
+- `src/frontend/pages/cart/checkout/[orderId]/index.tsx`
 - `src/cart/src/services/CartService.cs`
 - `src/checkout/main.go`
 - `src/payment/charge.js`

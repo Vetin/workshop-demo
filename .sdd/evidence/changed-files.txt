@@ -97,3 +97,12 @@ docs/features/_template/changes/_template/tasks/task-template.md
 docs/features/checkout-flow/overview.md
 docs/features/checkout-flow/changes/gift-wrap-checkout/01-design.md
 docs/features/checkout-flow/changes/gift-wrap-checkout/02-design-review.md
+docs/features/checkout-flow/changes/gift-wrap-checkout/03-implementation-plan.md
+docs/features/checkout-flow/changes/gift-wrap-checkout/tasks/T-01.md
+docs/features/checkout-flow/changes/gift-wrap-checkout/tasks/T-02.md
+docs/features/checkout-flow/changes/gift-wrap-checkout/tasks/T-03.md
+docs/features/checkout-flow/changes/gift-wrap-checkout/tasks/T-04.md
+docs/features/checkout-flow/changes/gift-wrap-checkout/tasks/T-05.md
+docs/features/checkout-flow/changes/gift-wrap-checkout/verification/manual-test-cases.md
+docs/features/checkout-flow/changes/gift-wrap-checkout/04-plan-review.md
+pb/demo.proto

@@ -101,6 +101,8 @@ Generated stubs live alongside source:
 - `app.user.id`, `app.user.currency`
 - `app.order.id`, `app.order.amount`, `app.order.items.count`
 - `app.shipping.amount`, `app.shipping.tracking.id`
+- `app.order.gift_wrap` (bool) — set on every `PlaceOrder` span regardless of selection (`src/checkout/main.go:296`)
+- `app.order.gift_wrap.amount` (float64) — set only when `gift_wrap=true`; value is the $5 USD fee converted to user currency (`src/checkout/main.go:359`)
 
 On `prepareOrderItemsAndShippingQuoteFromCart` child span:
 - `app.shipping.amount`, `app.cart.items.count`, `app.order.items.count`
@@ -109,6 +111,7 @@ On `prepareOrderItemsAndShippingQuoteFromCart` child span:
 - `"prepared"` — after cart/product/shipping retrieval
 - `"charged"` — after payment, with attribute `app.payment.transaction.id`
 - `"shipped"` — after shipping, with attribute `app.shipping.tracking.id`
+- `"gift_wrap_fee_applied"` — emitted only when `gift_wrap=true`, after currency conversion of the $5 fee (`src/checkout/main.go:348`)
 - `"error"` on deferred error handler — with `exception.message`
 
 **Kafka producer span** (`createProducerSpan`):
@@ -148,7 +151,10 @@ On `prepareOrderItemsAndShippingQuoteFromCart` child span:
 
 **Custom span:** `send_email` — manually created child span inside `send_email` method.
 
-**Custom span attribute:** `app.order.id` — added to auto-instrumented Sinatra span on `POST /send_order_confirmation`.
+**Custom span attributes:**
+
+- `app.order.id` — added to auto-instrumented Sinatra span on `POST /send_order_confirmation` (`email_server.rb:50`)
+- `app.email.recipient` — added to the `send_email` child span (`email_server.rb:88`)
 
 **Custom metric:**
 - `app.confirmation.counter` (counter, unit: `"1"`) — incremented for each order confirmation email.

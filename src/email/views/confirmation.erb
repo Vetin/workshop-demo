@@ -49,5 +49,11 @@
           </tr>
         <% end %>
     </table>
+    <% unless gift_message.nil? || gift_message.empty? %>
+      <div style="margin-top: 20px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 4px;">
+        <h3 style="margin: 0 0 8px; font-size: 14px; color: #333;">Gift Message</h3>
+        <p style="margin: 0; font-size: 14px; color: #555;"><%= CGI.escapeHTML(gift_message.to_s) %></p>
+      </div>
+    <% end %>
   </body>
 </html>

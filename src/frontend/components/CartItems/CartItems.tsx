@@ -14,9 +14,10 @@ import * as S from './CartItems.styled';
 interface IProps {
   productList: IProductCartItem[];
   shouldShowPrice?: boolean;
+  giftWrap?: boolean;
 }
 
-const CartItems = ({ productList, shouldShowPrice = true }: IProps) => {
+const CartItems = ({ productList, shouldShowPrice = true, giftWrap = false }: IProps) => {
   const { selectedCurrency } = useCurrency();
   const address: Address = {
     streetAddress: '1600 Amphitheatre Parkway',
@@ -42,14 +43,15 @@ const CartItems = ({ productList, shouldShowPrice = true }: IProps) => {
 
     const unitSum =
       productList.reduce((acc, { product: { priceUsd: { units = 0 } = {} }, quantity }) => acc + Number(units) * quantity, 0) +
-        (shippingConst?.units || 0) + nanoExceed;
+        (shippingConst?.units || 0) + nanoExceed +
+        (giftWrap ? 5 : 0);
 
     return {
       units: unitSum,
       currencyCode: selectedCurrency,
       nanos: nanoSum % 1000000000,
     };
-  }, [shippingConst?.units, shippingConst?.nanos, productList, selectedCurrency]);
+  }, [shippingConst?.units, shippingConst?.nanos, productList, selectedCurrency, giftWrap]);
 
   return (
     <S.CartItems>
@@ -67,6 +69,13 @@ const CartItems = ({ productList, shouldShowPrice = true }: IProps) => {
             <span>Shipping</span>
             <ProductPrice price={shippingConst} />
           </S.DataRow>
+          {giftWrap && (
+            <S.DataRow>
+              <span>Gift Wrap</span>
+              {/* TODO: replace hardcoded $5 with converted giftWrapCost from order response when available */}
+              <ProductPrice price={{ units: 5, nanos: 0, currencyCode: selectedCurrency }} />
+            </S.DataRow>
+          )}
           <S.DataRow>
             <S.TotalText>Total</S.TotalText>
             <S.TotalText>

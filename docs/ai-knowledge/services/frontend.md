@@ -63,6 +63,15 @@ All use `@grpc/grpc-js` with `ChannelCredentials.createInsecure()`.
 - `src/frontend/protos/demo.ts` — generated TypeScript stubs (from `pb/demo.proto`)
 - `src/frontend/Dockerfile`
 
+## Gift Wrap Checkout (T-04, T-05)
+
+- `src/frontend/components/CheckoutForm/CheckoutForm.tsx`: `IFormData` interface now includes `giftWrap: boolean` and `giftMessage: string`.
+- `src/frontend/components/CheckoutForm/GiftMessage.styled.ts` (new file): exports `GiftWrapRow` and `GiftMessageTextarea` styled components used by the checkout form.
+- `src/frontend/components/CartItems/CartItems.tsx`: accepts an optional `giftWrap?: boolean` prop; when true, renders a +$5 gift wrap fee row and includes it in the displayed total.
+- `src/frontend/components/Cart/CartDetail.tsx`: lifts `giftWrap` state via an `onGiftWrapChange` callback; passes `giftWrap` and `giftMessage` through to `placeOrder`.
+- `src/frontend/pages/cart/checkout/[orderId]/index.tsx`: destructures `giftWrap` and `giftWrapCost` from `OrderResult`; renders a gift wrap fee summary row when `giftWrap && giftWrapCost`; includes `giftWrapCost` units/nanos in the `orderTotal` useMemo.
+- `CypressFields` enum extended with `GiftWrapCheckbox` and `GiftMessageTextarea`.
+
 ## Risky Notes
 
 1. The TypeScript protobuf stubs in `src/frontend/protos/` are generated files. Changes to `pb/demo.proto` must trigger regeneration; there is no automated check in CI that verifies they are current.

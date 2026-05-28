@@ -6050,6 +6050,8 @@ class OrderResult final :
     kShippingTrackingIdFieldNumber = 2,
     kShippingCostFieldNumber = 3,
     kShippingAddressFieldNumber = 4,
+    kGiftWrapCostFieldNumber = 7,
+    kGiftWrapFieldNumber = 6,
   };
   // repeated .oteldemo.OrderItem items = 5;
   int items_size() const;
@@ -6131,12 +6133,37 @@ class OrderResult final :
   ::oteldemo::Address* _internal_mutable_shipping_address();
 
   public:
+  // .oteldemo.Money gift_wrap_cost = 7;
+  bool has_gift_wrap_cost() const;
+  void clear_gift_wrap_cost() ;
+  const ::oteldemo::Money& gift_wrap_cost() const;
+  PROTOBUF_NODISCARD ::oteldemo::Money* release_gift_wrap_cost();
+  ::oteldemo::Money* mutable_gift_wrap_cost();
+  void set_allocated_gift_wrap_cost(::oteldemo::Money* value);
+  void unsafe_arena_set_allocated_gift_wrap_cost(::oteldemo::Money* value);
+  ::oteldemo::Money* unsafe_arena_release_gift_wrap_cost();
+
+  private:
+  const ::oteldemo::Money& _internal_gift_wrap_cost() const;
+  ::oteldemo::Money* _internal_mutable_gift_wrap_cost();
+
+  public:
+  // bool gift_wrap = 6;
+  void clear_gift_wrap() ;
+  bool gift_wrap() const;
+  void set_gift_wrap(bool value);
+
+  private:
+  bool _internal_gift_wrap() const;
+  void _internal_set_gift_wrap(bool value);
+
+  public:
   // @@protoc_insertion_point(class_scope:oteldemo.OrderResult)
  private:
   class _Internal;
 
   friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<3, 5, 3, 57, 2> _table_;
+  static const ::google::protobuf::internal::TcParseTable<3, 7, 4, 57, 2> _table_;
   template <typename T> friend class ::google::protobuf::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
@@ -6148,6 +6175,8 @@ class OrderResult final :
     ::google::protobuf::internal::ArenaStringPtr shipping_tracking_id_;
     ::oteldemo::Money* shipping_cost_;
     ::oteldemo::Address* shipping_address_;
+    ::oteldemo::Money* gift_wrap_cost_;
+    bool gift_wrap_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -6467,8 +6496,10 @@ class PlaceOrderRequest final :
     kUserIdFieldNumber = 1,
     kUserCurrencyFieldNumber = 2,
     kEmailFieldNumber = 5,
+    kGiftMessageFieldNumber = 8,
     kAddressFieldNumber = 3,
     kCreditCardFieldNumber = 6,
+    kGiftWrapFieldNumber = 7,
   };
   // string user_id = 1;
   void clear_user_id() ;
@@ -6518,6 +6549,22 @@ class PlaceOrderRequest final :
   std::string* _internal_mutable_email();
 
   public:
+  // string gift_message = 8;
+  void clear_gift_message() ;
+  const std::string& gift_message() const;
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_gift_message(Arg_&& arg, Args_... args);
+  std::string* mutable_gift_message();
+  PROTOBUF_NODISCARD std::string* release_gift_message();
+  void set_allocated_gift_message(std::string* ptr);
+
+  private:
+  const std::string& _internal_gift_message() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_gift_message(
+      const std::string& value);
+  std::string* _internal_mutable_gift_message();
+
+  public:
   // .oteldemo.Address address = 3;
   bool has_address() const;
   void clear_address() ;
@@ -6548,12 +6595,22 @@ class PlaceOrderRequest final :
   ::oteldemo::CreditCardInfo* _internal_mutable_credit_card();
 
   public:
+  // bool gift_wrap = 7;
+  void clear_gift_wrap() ;
+  bool gift_wrap() const;
+  void set_gift_wrap(bool value);
+
+  private:
+  bool _internal_gift_wrap() const;
+  void _internal_set_gift_wrap(bool value);
+
+  public:
   // @@protoc_insertion_point(class_scope:oteldemo.PlaceOrderRequest)
  private:
   class _Internal;
 
   friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<3, 5, 2, 60, 2> _table_;
+  static const ::google::protobuf::internal::TcParseTable<3, 7, 2, 72, 2> _table_;
   template <typename T> friend class ::google::protobuf::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
@@ -6563,8 +6620,10 @@ class PlaceOrderRequest final :
     ::google::protobuf::internal::ArenaStringPtr user_id_;
     ::google::protobuf::internal::ArenaStringPtr user_currency_;
     ::google::protobuf::internal::ArenaStringPtr email_;
+    ::google::protobuf::internal::ArenaStringPtr gift_message_;
     ::oteldemo::Address* address_;
     ::oteldemo::CreditCardInfo* credit_card_;
+    bool gift_wrap_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -12837,6 +12896,124 @@ OrderResult::_internal_mutable_items() {
   return &_impl_.items_;
 }
 
+// bool gift_wrap = 6;
+inline void OrderResult::clear_gift_wrap() {
+  _impl_.gift_wrap_ = false;
+}
+inline bool OrderResult::gift_wrap() const {
+  // @@protoc_insertion_point(field_get:oteldemo.OrderResult.gift_wrap)
+  return _internal_gift_wrap();
+}
+inline void OrderResult::set_gift_wrap(bool value) {
+  _internal_set_gift_wrap(value);
+  // @@protoc_insertion_point(field_set:oteldemo.OrderResult.gift_wrap)
+}
+inline bool OrderResult::_internal_gift_wrap() const {
+  PROTOBUF_TSAN_READ(&_impl_._tsan_detect_race);
+  return _impl_.gift_wrap_;
+}
+inline void OrderResult::_internal_set_gift_wrap(bool value) {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ;
+  _impl_.gift_wrap_ = value;
+}
+
+// .oteldemo.Money gift_wrap_cost = 7;
+inline bool OrderResult::has_gift_wrap_cost() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.gift_wrap_cost_ != nullptr);
+  return value;
+}
+inline void OrderResult::clear_gift_wrap_cost() {
+  if (_impl_.gift_wrap_cost_ != nullptr) _impl_.gift_wrap_cost_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000004u;
+}
+inline const ::oteldemo::Money& OrderResult::_internal_gift_wrap_cost() const {
+  PROTOBUF_TSAN_READ(&_impl_._tsan_detect_race);
+  const ::oteldemo::Money* p = _impl_.gift_wrap_cost_;
+  return p != nullptr ? *p : reinterpret_cast<const ::oteldemo::Money&>(::oteldemo::_Money_default_instance_);
+}
+inline const ::oteldemo::Money& OrderResult::gift_wrap_cost() const {
+  // @@protoc_insertion_point(field_get:oteldemo.OrderResult.gift_wrap_cost)
+  return _internal_gift_wrap_cost();
+}
+inline void OrderResult::unsafe_arena_set_allocated_gift_wrap_cost(::oteldemo::Money* value) {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.gift_wrap_cost_);
+  }
+  _impl_.gift_wrap_cost_ = reinterpret_cast<::oteldemo::Money*>(value);
+  if (value != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000004u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000004u;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:oteldemo.OrderResult.gift_wrap_cost)
+}
+inline ::oteldemo::Money* OrderResult::release_gift_wrap_cost() {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+
+  _impl_._has_bits_[0] &= ~0x00000004u;
+  ::oteldemo::Money* released = _impl_.gift_wrap_cost_;
+  _impl_.gift_wrap_cost_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
+  released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+  if (GetArenaForAllocation() == nullptr) {
+    delete old;
+  }
+#else   // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return released;
+}
+inline ::oteldemo::Money* OrderResult::unsafe_arena_release_gift_wrap_cost() {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  // @@protoc_insertion_point(field_release:oteldemo.OrderResult.gift_wrap_cost)
+
+  _impl_._has_bits_[0] &= ~0x00000004u;
+  ::oteldemo::Money* temp = _impl_.gift_wrap_cost_;
+  _impl_.gift_wrap_cost_ = nullptr;
+  return temp;
+}
+inline ::oteldemo::Money* OrderResult::_internal_mutable_gift_wrap_cost() {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  _impl_._has_bits_[0] |= 0x00000004u;
+  if (_impl_.gift_wrap_cost_ == nullptr) {
+    auto* p = CreateMaybeMessage<::oteldemo::Money>(GetArenaForAllocation());
+    _impl_.gift_wrap_cost_ = reinterpret_cast<::oteldemo::Money*>(p);
+  }
+  return _impl_.gift_wrap_cost_;
+}
+inline ::oteldemo::Money* OrderResult::mutable_gift_wrap_cost() {
+  ::oteldemo::Money* _msg = _internal_mutable_gift_wrap_cost();
+  // @@protoc_insertion_point(field_mutable:oteldemo.OrderResult.gift_wrap_cost)
+  return _msg;
+}
+inline void OrderResult::set_allocated_gift_wrap_cost(::oteldemo::Money* value) {
+  ::google::protobuf::Arena* message_arena = GetArenaForAllocation();
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  if (message_arena == nullptr) {
+    delete reinterpret_cast<::oteldemo::Money*>(_impl_.gift_wrap_cost_);
+  }
+
+  if (value != nullptr) {
+    ::google::protobuf::Arena* submessage_arena =
+        ::google::protobuf::Arena::InternalGetOwningArena(reinterpret_cast<::oteldemo::Money*>(value));
+    if (message_arena != submessage_arena) {
+      value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000004u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000004u;
+  }
+
+  _impl_.gift_wrap_cost_ = reinterpret_cast<::oteldemo::Money*>(value);
+  // @@protoc_insertion_point(field_set_allocated:oteldemo.OrderResult.gift_wrap_cost)
+}
+
 // -------------------------------------------------------------------
 
 // SendOrderConfirmationRequest
@@ -13335,6 +13512,79 @@ inline void PlaceOrderRequest::set_allocated_credit_card(::oteldemo::CreditCardI
 
   _impl_.credit_card_ = reinterpret_cast<::oteldemo::CreditCardInfo*>(value);
   // @@protoc_insertion_point(field_set_allocated:oteldemo.PlaceOrderRequest.credit_card)
+}
+
+// bool gift_wrap = 7;
+inline void PlaceOrderRequest::clear_gift_wrap() {
+  _impl_.gift_wrap_ = false;
+}
+inline bool PlaceOrderRequest::gift_wrap() const {
+  // @@protoc_insertion_point(field_get:oteldemo.PlaceOrderRequest.gift_wrap)
+  return _internal_gift_wrap();
+}
+inline void PlaceOrderRequest::set_gift_wrap(bool value) {
+  _internal_set_gift_wrap(value);
+  // @@protoc_insertion_point(field_set:oteldemo.PlaceOrderRequest.gift_wrap)
+}
+inline bool PlaceOrderRequest::_internal_gift_wrap() const {
+  PROTOBUF_TSAN_READ(&_impl_._tsan_detect_race);
+  return _impl_.gift_wrap_;
+}
+inline void PlaceOrderRequest::_internal_set_gift_wrap(bool value) {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ;
+  _impl_.gift_wrap_ = value;
+}
+
+// string gift_message = 8;
+inline void PlaceOrderRequest::clear_gift_message() {
+  _impl_.gift_message_.ClearToEmpty();
+}
+inline const std::string& PlaceOrderRequest::gift_message() const {
+  // @@protoc_insertion_point(field_get:oteldemo.PlaceOrderRequest.gift_message)
+  return _internal_gift_message();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void PlaceOrderRequest::set_gift_message(Arg_&& arg,
+                                                     Args_... args) {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ;
+  _impl_.gift_message_.Set(static_cast<Arg_&&>(arg), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:oteldemo.PlaceOrderRequest.gift_message)
+}
+inline std::string* PlaceOrderRequest::mutable_gift_message() {
+  std::string* _s = _internal_mutable_gift_message();
+  // @@protoc_insertion_point(field_mutable:oteldemo.PlaceOrderRequest.gift_message)
+  return _s;
+}
+inline const std::string& PlaceOrderRequest::_internal_gift_message() const {
+  PROTOBUF_TSAN_READ(&_impl_._tsan_detect_race);
+  return _impl_.gift_message_.Get();
+}
+inline void PlaceOrderRequest::_internal_set_gift_message(const std::string& value) {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ;
+  _impl_.gift_message_.Set(value, GetArenaForAllocation());
+}
+inline std::string* PlaceOrderRequest::_internal_mutable_gift_message() {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ;
+  return _impl_.gift_message_.Mutable( GetArenaForAllocation());
+}
+inline std::string* PlaceOrderRequest::release_gift_message() {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  // @@protoc_insertion_point(field_release:oteldemo.PlaceOrderRequest.gift_message)
+  return _impl_.gift_message_.Release();
+}
+inline void PlaceOrderRequest::set_allocated_gift_message(std::string* value) {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  _impl_.gift_message_.SetAllocated(value, GetArenaForAllocation());
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+        if (_impl_.gift_message_.IsDefault()) {
+          _impl_.gift_message_.Set("", GetArenaForAllocation());
+        }
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:oteldemo.PlaceOrderRequest.gift_message)
 }
 
 // -------------------------------------------------------------------

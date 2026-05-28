@@ -15,10 +15,11 @@ import AdProvider from '../../../../providers/Ad.provider';
 import { Money } from '../../../../protos/demo';
 import * as S from '../../../../styles/Checkout.styled';
 import { IProductCheckout } from '../../../../types/Cart';
+import { CypressFields } from '../../../../utils/enums/CypressFields';
 
 const Checkout: NextPage = () => {
   const { query } = useRouter();
-  const { orderId, items = [], shippingAddress, shippingCost = { units: 0, currencyCode: 'USD', nanos: 0 } } = JSON.parse((query.order || '{}') as string) as IProductCheckout;
+  const { orderId, items = [], shippingAddress, shippingCost = { units: 0, currencyCode: 'USD', nanos: 0 }, giftWrap, giftWrapCost } = JSON.parse((query.order || '{}') as string) as IProductCheckout;
 
   const orderTotal = useMemo<Money>(() => {
     const itemsTotal = items.reduce((acc, { item, cost = { units: 0, nanos: 0, currencyCode: 'USD' } }) => {
@@ -29,15 +30,15 @@ const Checkout: NextPage = () => {
       };
     }, { units: 0, nanos: 0, currencyCode: 'USD' });
 
-    const totalNanos = itemsTotal.nanos + (shippingCost.nanos || 0);
+    const totalNanos = itemsTotal.nanos + (shippingCost.nanos || 0) + (giftWrapCost?.nanos ?? 0);
     const nanoExceed = Math.floor(totalNanos / 1000000000);
 
     return {
-      units: itemsTotal.units + (shippingCost.units || 0) + nanoExceed,
+      units: itemsTotal.units + (shippingCost.units || 0) + (giftWrapCost?.units ?? 0) + nanoExceed,
       nanos: totalNanos % 1000000000,
       currencyCode: shippingCost.currencyCode || 'USD',
     };
-  }, [items, shippingCost]);
+  }, [items, shippingCost, giftWrapCost]);
 
   return (
     <AdProvider
@@ -81,7 +82,7 @@ const Checkout: NextPage = () => {
                   itemTotal.nanos = itemTotal.nanos % 1000000000;
 
                   return (
-                    <S.OrderItem key={item.productId}>
+                    <S.OrderItem key={item.productId} data-cy={CypressFields.CheckoutItem}>
                       <S.ItemImage src={"/images/products/" + item.product.picture} alt={item.product.name}/>
                       <S.ItemDetails>
                         <S.ItemName>{item.product.name}</S.ItemName>
@@ -100,6 +101,12 @@ const Checkout: NextPage = () => {
                   <span>Shipping:</span>
                   <ProductPrice price={shippingCost} />
                 </S.SummaryRow>
+                {giftWrap && giftWrapCost && (
+                  <S.SummaryRow>
+                    <span>Gift Wrap:</span>
+                    <ProductPrice price={giftWrapCost} />
+                  </S.SummaryRow>
+                )}
                 <S.TotalRow>
                   <S.TotalLabel>Total:</S.TotalLabel>
                   <S.TotalAmount>

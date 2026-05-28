@@ -76,8 +76,9 @@ Allow shoppers to add gift wrapping to their order during checkout. The feature 
         effectiveGiftMessage := ""
         if req.GiftWrap { effectiveGiftMessage = req.GiftMessage }
       Then call: cs.sendOrderConfirmation(ctx, req.Email, orderResult, effectiveGiftMessage)
-      The updated signature is sendOrderConfirmation(ctx, email, giftMessage string,
-      order *pb.OrderResult). Include gift_message in the JSON body only when non-empty.
+      The updated signature is sendOrderConfirmation(ctx context.Context, email string,
+      order *pb.OrderResult, giftMessage string). Include gift_message in the JSON body
+      only when non-empty.
    i. Publishes OrderResult to Kafka (gift_wrap + gift_wrap_cost included; gift_message
       is NOT in OrderResult and does NOT reach the Kafka payload)
 8. Email service (POST /send_order_confirmation):
@@ -121,7 +122,7 @@ message PlaceOrderRequest {
     string user_id = 1;
     string user_currency = 2;
     Address address = 3;
-    reserved 4;                    // guard: field 4 was previously used, prevent reuse
+    reserved 4;                    // guard: field 4 was previously unused — prevent accidental future reuse
     string email = 5;
     CreditCardInfo credit_card = 6;
     // NEW:

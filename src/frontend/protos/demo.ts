@@ -204,6 +204,10 @@ export interface OrderResult {
   shippingCost: Money | undefined;
   shippingAddress: Address | undefined;
   items: OrderItem[];
+  /** NEW: true if order was gift wrapped */
+  giftWrap: boolean;
+  /** NEW: gift wrap fee in user currency (zero if gift_wrap=false) */
+  giftWrapCost: Money | undefined;
 }
 
 export interface SendOrderConfirmationRequest {
@@ -216,7 +220,13 @@ export interface PlaceOrderRequest {
   userCurrency: string;
   address: Address | undefined;
   email: string;
-  creditCard: CreditCardInfo | undefined;
+  creditCard:
+    | CreditCardInfo
+    | undefined;
+  /** NEW: user selected gift wrapping */
+  giftWrap: boolean;
+  /** NEW: optional personal message (max 500 chars, frontend-only enforcement) */
+  giftMessage: string;
 }
 
 export interface PlaceOrderResponse {
@@ -2621,7 +2631,15 @@ export const OrderItem: MessageFns<OrderItem> = {
 };
 
 function createBaseOrderResult(): OrderResult {
-  return { orderId: "", shippingTrackingId: "", shippingCost: undefined, shippingAddress: undefined, items: [] };
+  return {
+    orderId: "",
+    shippingTrackingId: "",
+    shippingCost: undefined,
+    shippingAddress: undefined,
+    items: [],
+    giftWrap: false,
+    giftWrapCost: undefined,
+  };
 }
 
 export const OrderResult: MessageFns<OrderResult> = {
@@ -2640,6 +2658,12 @@ export const OrderResult: MessageFns<OrderResult> = {
     }
     for (const v of message.items) {
       OrderItem.encode(v!, writer.uint32(42).fork()).join();
+    }
+    if (message.giftWrap !== false) {
+      writer.uint32(48).bool(message.giftWrap);
+    }
+    if (message.giftWrapCost !== undefined) {
+      Money.encode(message.giftWrapCost, writer.uint32(58).fork()).join();
     }
     return writer;
   },
@@ -2691,6 +2715,22 @@ export const OrderResult: MessageFns<OrderResult> = {
           message.items.push(OrderItem.decode(reader, reader.uint32()));
           continue;
         }
+        case 6: {
+          if (tag !== 48) {
+            break;
+          }
+
+          message.giftWrap = reader.bool();
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.giftWrapCost = Money.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -2707,6 +2747,8 @@ export const OrderResult: MessageFns<OrderResult> = {
       shippingCost: isSet(object.shippingCost) ? Money.fromJSON(object.shippingCost) : undefined,
       shippingAddress: isSet(object.shippingAddress) ? Address.fromJSON(object.shippingAddress) : undefined,
       items: globalThis.Array.isArray(object?.items) ? object.items.map((e: any) => OrderItem.fromJSON(e)) : [],
+      giftWrap: isSet(object.giftWrap) ? globalThis.Boolean(object.giftWrap) : false,
+      giftWrapCost: isSet(object.giftWrapCost) ? Money.fromJSON(object.giftWrapCost) : undefined,
     };
   },
 
@@ -2727,6 +2769,12 @@ export const OrderResult: MessageFns<OrderResult> = {
     if (message.items?.length) {
       obj.items = message.items.map((e) => OrderItem.toJSON(e));
     }
+    if (message.giftWrap !== false) {
+      obj.giftWrap = message.giftWrap;
+    }
+    if (message.giftWrapCost !== undefined) {
+      obj.giftWrapCost = Money.toJSON(message.giftWrapCost);
+    }
     return obj;
   },
 
@@ -2744,6 +2792,10 @@ export const OrderResult: MessageFns<OrderResult> = {
       ? Address.fromPartial(object.shippingAddress)
       : undefined;
     message.items = object.items?.map((e) => OrderItem.fromPartial(e)) || [];
+    message.giftWrap = object.giftWrap ?? false;
+    message.giftWrapCost = (object.giftWrapCost !== undefined && object.giftWrapCost !== null)
+      ? Money.fromPartial(object.giftWrapCost)
+      : undefined;
     return message;
   },
 };
@@ -2827,7 +2879,15 @@ export const SendOrderConfirmationRequest: MessageFns<SendOrderConfirmationReque
 };
 
 function createBasePlaceOrderRequest(): PlaceOrderRequest {
-  return { userId: "", userCurrency: "", address: undefined, email: "", creditCard: undefined };
+  return {
+    userId: "",
+    userCurrency: "",
+    address: undefined,
+    email: "",
+    creditCard: undefined,
+    giftWrap: false,
+    giftMessage: "",
+  };
 }
 
 export const PlaceOrderRequest: MessageFns<PlaceOrderRequest> = {
@@ -2846,6 +2906,12 @@ export const PlaceOrderRequest: MessageFns<PlaceOrderRequest> = {
     }
     if (message.creditCard !== undefined) {
       CreditCardInfo.encode(message.creditCard, writer.uint32(50).fork()).join();
+    }
+    if (message.giftWrap !== false) {
+      writer.uint32(56).bool(message.giftWrap);
+    }
+    if (message.giftMessage !== "") {
+      writer.uint32(66).string(message.giftMessage);
     }
     return writer;
   },
@@ -2897,6 +2963,22 @@ export const PlaceOrderRequest: MessageFns<PlaceOrderRequest> = {
           message.creditCard = CreditCardInfo.decode(reader, reader.uint32());
           continue;
         }
+        case 7: {
+          if (tag !== 56) {
+            break;
+          }
+
+          message.giftWrap = reader.bool();
+          continue;
+        }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.giftMessage = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -2913,6 +2995,8 @@ export const PlaceOrderRequest: MessageFns<PlaceOrderRequest> = {
       address: isSet(object.address) ? Address.fromJSON(object.address) : undefined,
       email: isSet(object.email) ? globalThis.String(object.email) : "",
       creditCard: isSet(object.creditCard) ? CreditCardInfo.fromJSON(object.creditCard) : undefined,
+      giftWrap: isSet(object.giftWrap) ? globalThis.Boolean(object.giftWrap) : false,
+      giftMessage: isSet(object.giftMessage) ? globalThis.String(object.giftMessage) : "",
     };
   },
 
@@ -2933,6 +3017,12 @@ export const PlaceOrderRequest: MessageFns<PlaceOrderRequest> = {
     if (message.creditCard !== undefined) {
       obj.creditCard = CreditCardInfo.toJSON(message.creditCard);
     }
+    if (message.giftWrap !== false) {
+      obj.giftWrap = message.giftWrap;
+    }
+    if (message.giftMessage !== "") {
+      obj.giftMessage = message.giftMessage;
+    }
     return obj;
   },
 
@@ -2950,6 +3040,8 @@ export const PlaceOrderRequest: MessageFns<PlaceOrderRequest> = {
     message.creditCard = (object.creditCard !== undefined && object.creditCard !== null)
       ? CreditCardInfo.fromPartial(object.creditCard)
       : undefined;
+    message.giftWrap = object.giftWrap ?? false;
+    message.giftMessage = object.giftMessage ?? "";
     return message;
   },
 };

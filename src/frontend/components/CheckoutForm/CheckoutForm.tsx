@@ -6,6 +6,7 @@ import { useCallback, useState } from 'react';
 import { CypressFields } from '../../utils/enums/CypressFields';
 import Input from '../Input';
 import * as S from './CheckoutForm.styled';
+import { GiftWrapRow, GiftMessageTextarea } from './GiftMessage.styled';
 
 const currentYear = new Date().getFullYear();
 const yearList = Array.from(new Array(20), (v, i) => i + currentYear);
@@ -21,13 +22,16 @@ export interface IFormData {
   creditCardCvv: number;
   creditCardExpirationYear: number;
   creditCardExpirationMonth: number;
+  giftWrap: boolean;
+  giftMessage: string;
 }
 
 interface IProps {
   onSubmit(formData: IFormData): void;
+  onGiftWrapChange?: (value: boolean) => void;
 }
 
-const CheckoutForm = ({ onSubmit }: IProps) => {
+const CheckoutForm = ({ onSubmit, onGiftWrapChange }: IProps) => {
   const [
     {
       email,
@@ -40,6 +44,8 @@ const CheckoutForm = ({ onSubmit }: IProps) => {
       creditCardExpirationMonth,
       creditCardExpirationYear,
       creditCardNumber,
+      giftWrap,
+      giftMessage,
     },
     setFormData,
   ] = useState<IFormData>({
@@ -53,6 +59,8 @@ const CheckoutForm = ({ onSubmit }: IProps) => {
     creditCardCvv: 672,
     creditCardExpirationYear: 2030,
     creditCardExpirationMonth: 1,
+    giftWrap: false,
+    giftMessage: '',
   });
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -77,6 +85,8 @@ const CheckoutForm = ({ onSubmit }: IProps) => {
           creditCardExpirationMonth,
           creditCardExpirationYear,
           creditCardNumber,
+          giftWrap,
+          giftMessage,
         });
       }}
     >
@@ -188,6 +198,42 @@ const CheckoutForm = ({ onSubmit }: IProps) => {
           onChange={handleChange}
         />
       </S.CardRow>
+
+      {/* Gift Wrap */}
+      <GiftWrapRow>
+        <input
+          type="checkbox"
+          id="gift_wrap"
+          name="giftWrap"
+          data-cy={CypressFields.GiftWrapCheckbox}
+          checked={giftWrap}
+          onChange={e => {
+            const checked = e.target.checked;
+            setFormData(prev => ({
+              ...prev,
+              giftWrap: checked,
+              giftMessage: checked ? prev.giftMessage : '',
+            }));
+            onGiftWrapChange?.(checked);
+          }}
+        />
+        <label htmlFor="gift_wrap">Add gift wrap (+$5.00)</label>
+      </GiftWrapRow>
+
+      {giftWrap && (
+        <div>
+          <label htmlFor="gift_message">Gift message (optional)</label>
+          <GiftMessageTextarea
+            id="gift_message"
+            name="giftMessage"
+            data-cy={CypressFields.GiftMessageTextarea}
+            maxLength={500}
+            value={giftMessage}
+            onChange={e => setFormData(prev => ({ ...prev, giftMessage: e.target.value }))}
+            placeholder="Add a personal message..."
+          />
+        </div>
+      )}
 
       <S.SubmitContainer>
         <Link href="/">

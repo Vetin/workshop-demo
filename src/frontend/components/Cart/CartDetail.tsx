@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useRouter } from 'next/router';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import CartItems from '../CartItems';
 import CheckoutForm from '../CheckoutForm';
 import { IFormData } from '../CheckoutForm/CheckoutForm';
@@ -21,6 +21,7 @@ const CartDetail = () => {
   } = useCart();
   const { selectedCurrency } = useCurrency();
   const { push } = useRouter();
+  const [giftWrap, setGiftWrap] = useState(false);
 
   const onPlaceOrder = useCallback(
     async ({
@@ -34,6 +35,8 @@ const CartDetail = () => {
       creditCardExpirationMonth,
       creditCardExpirationYear,
       creditCardNumber,
+      giftWrap: giftWrapSelected,
+      giftMessage,
     }: IFormData) => {
       const order = await placeOrder({
         userId,
@@ -52,6 +55,8 @@ const CartDetail = () => {
           creditCardExpirationYear,
           creditCardNumber,
         },
+        giftWrap: giftWrapSelected,
+        giftMessage,
       });
 
       push({
@@ -71,9 +76,9 @@ const CartDetail = () => {
             Empty Cart
           </S.EmptyCartButton>
         </S.Header>
-        <CartItems productList={items} />
+        <CartItems productList={items} giftWrap={giftWrap} />
       </div>
-      <CheckoutForm onSubmit={onPlaceOrder} />
+      <CheckoutForm onSubmit={onPlaceOrder} onGiftWrapChange={setGiftWrap} />
     </S.Container>
   );
 };

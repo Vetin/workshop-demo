@@ -54,6 +54,44 @@ service CheckoutService {
 ```
 Callers: frontend (`src/frontend/gateways/rpc/Checkout.gateway.ts`).
 
+### PlaceOrderRequest fields
+
+```
+string user_id       = 1
+string user_currency = 2
+Address address      = 3
+string email         = 5
+CreditCardInfo credit_card = 6
+bool   gift_wrap     = 7
+string gift_message  = 8
+```
+
+### OrderResult fields
+
+```
+string order_id              = 1
+string shipping_tracking_id  = 2
+Money  shipping_cost         = 3
+Address shipping_address     = 4
+repeated OrderItem items     = 5
+bool   gift_wrap             = 6
+Money  gift_wrap_cost        = 7
+```
+
+## Gift Wrap Logic (src/checkout/main.go)
+
+When `PlaceOrderRequest.GiftWrap` is true:
+- A fixed $5 USD fee is converted to the user's currency via `CurrencyService.Convert`.
+- `OrderResult.GiftWrap` is set to `true` and `OrderResult.GiftWrapCost` is populated.
+- The `gift_wrap_fee_applied` span event is emitted on the `PlaceOrder` span.
+- `app.order.gift_wrap.amount` (float64) span attribute is set to the converted fee value.
+
+`app.order.gift_wrap` (bool) is set on every `PlaceOrder` span regardless of whether gift wrap is selected.
+
+`sendOrderConfirmation` now accepts a `giftMessage string` parameter. The gift message is
+passed to the email service only when `gift_wrap=true` and is never recorded in any span
+attribute, span event, log body field, or metric label (PII constraint).
+
 ## Key Source Files
 
 - `src/checkout/main.go` — entry point, all service client setup, OTel bootstrap

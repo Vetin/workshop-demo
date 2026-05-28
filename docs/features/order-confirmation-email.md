@@ -17,7 +17,7 @@ The email service renders an ERB template and dispatches via `Pony` (configured 
 
 | Step | Call |
 |---|---|
-| Send email | HTTP `POST {EMAIL_ADDR}/send_order_confirmation` with JSON `{ email, order }` |
+| Send email | HTTP `POST {EMAIL_ADDR}/send_order_confirmation` with JSON `{ email, order, gift_message }`. `gift_message` is a top-level field (not nested in `order`); omitted entirely when `gift_wrap=false`. Never recorded in telemetry. |
 
 The outgoing HTTP call from checkout uses `otelhttp.Post`, so it is automatically traced as a child span of the `PlaceOrder` span.
 
@@ -36,6 +36,7 @@ The outgoing HTTP call from checkout uses `otelhttp.Post`, so it is automaticall
 
 ## Source paths
 
-- `src/checkout/main.go` (function `sendOrderConfirmation`, call site in `PlaceOrder`)
+- `src/checkout/main.go` (function `sendOrderConfirmation(ctx, order, giftMessage string)`, call site in `PlaceOrder`)
 - `src/email/email_server.rb`
-- `src/email/views/confirmation.erb`
+- `src/email/views/confirmation.erb` — conditionally renders a gift message block when `gift_message` is non-nil and non-empty; uses `CGI.escapeHTML(gift_message.to_s)` for XSS protection
+- `src/email/email_server_test.rb` — unit tests covering gift message rendering, XSS escaping, nil/empty guards, and PII non-leakage

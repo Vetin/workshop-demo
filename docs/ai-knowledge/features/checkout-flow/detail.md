@@ -46,7 +46,7 @@ This is the core orchestration. Steps in order:
    - If `paymentUnreachable` flag is on, uses `badAddress:50051` instead
 7. **Ship order**: `POST {SHIPPING_ADDR}/ship-order` with JSON body `{address, items}` → returns `tracking_id`
 8. **Empty cart**: gRPC `CartService.EmptyCart(EmptyCartRequest{UserId})`
-9. **Send confirmation email**: `POST {EMAIL_ADDR}/send_order_confirmation` with JSON body `{email, order}`
+9. **Send confirmation email**: `POST {EMAIL_ADDR}/send_order_confirmation` with JSON body `{email, order, gift_message}` (when `gift_wrap=true`; `gift_message` is a top-level field, omitted when `gift_wrap=false`)
 10. **Publish to Kafka** (only if `KAFKA_ADDR` is set): publishes protobuf-serialized `OrderResult` to the Kafka topic
 
 Span attributes set in PlaceOrder:
@@ -56,7 +56,9 @@ Span attributes set in PlaceOrder:
 - `app.order.amount` (float64)
 - `app.order.items.count` (int)
 - `app.shipping.tracking.id`
-- Span events: `"prepared"`, `"charged"` (with `app.payment.transaction.id`), `"shipped"` (with `app.shipping.tracking.id`)
+- `app.order.gift_wrap` (bool, always set on every PlaceOrder call)
+- `app.order.gift_wrap.amount` (float64, set only when `gift_wrap=true`; value is the $5 fee converted to user currency)
+- Span events: `"prepared"`, `"charged"` (with `app.payment.transaction.id`), `"shipped"` (with `app.shipping.tracking.id`), `"gift_wrap_fee_applied"` (only when `gift_wrap=true`)
 
 Span attributes set in `prepareOrderItemsAndShippingQuoteFromCart`:
 - `app.shipping.amount`, `app.cart.items.count`, `app.order.items.count`
@@ -102,6 +104,11 @@ Two HTTP POST endpoints: `/get-quote` and `/ship-order`. No gRPC — checkout ca
 File: `src/frontend/pages/cart/checkout/[orderId]/index.tsx`
 
 Rendered on the client from query params (`?order=<JSON>`). Shows order ID, shipping address, item list, shipping cost, and total. No additional API calls.
+
+When `giftWrap=true` on the `OrderResult`, a gift wrap fee row is rendered:
+`<S.SummaryRow><span>Gift Wrap:</span><ProductPrice price={giftWrapCost} /></S.SummaryRow>`.
+The `orderTotal` useMemo includes `giftWrapCost?.units` and `giftWrapCost?.nanos` so the
+grand total reflects the gift wrap charge.
 
 ## EmptyCart and cartFailure flag
 
