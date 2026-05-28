@@ -78,7 +78,7 @@ Uses `otelhttp.Post()` from `go.opentelemetry.io/contrib/instrumentation/net/htt
 |--------|--------|------|-----------------|--------------|
 | shipping | POST | `$SHIPPING_ADDR/get-quote` | `src/checkout/main.go:463` | `{ address, items }` JSON |
 | shipping | POST | `$SHIPPING_ADDR/ship-order` | `src/checkout/main.go:583` | `{ address, items }` JSON |
-| email | POST | `$EMAIL_ADDR/send_order_confirmation` | `src/checkout/main.go:561` | `{ email, order, gift_message }` JSON. `gift_message` omitted when `gift_wrap=false`. |
+| email | POST | `$EMAIL_ADDR/send_order_confirmation` | `src/checkout/main.go:604` | `{ email, order, gift_message }` JSON. `gift_message` omitted when `gift_wrap=false`. |
 
 ### shipping (Rust)
 

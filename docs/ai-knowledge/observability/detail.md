@@ -457,6 +457,7 @@ Test assertions reference both RPC-level attributes (`rpc.grpc.status_code`, `rp
 5. **The `transform` processor** at the collector strips query strings from all span names (`replace_pattern(name, "\\?.*", "")`). Any new route that might carry tokens or PII in query parameters is automatically scrubbed at ingestion. Do not bypass this processor.
 6. **Baggage** is used for `session.id` and `synthetic_request`. Do not propagate PII through baggage.
 7. **Log indexes** in OpenSearch (`otel-logs-*`) receive all service logs. New structured log fields that could contain PII require a risk review before adding.
+8. **Gift message text** (`gift_message` / `giftMessage`) is PII and must never appear as a span attribute, event, log field, metric label, or in any OTLP export across any service. Checkout passes it to the email service only over HTTP and never records it in telemetry. The email service renders it in the confirmation template only.
 
 ---
 

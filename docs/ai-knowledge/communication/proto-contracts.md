@@ -224,7 +224,7 @@ service EmailService {
 | Role | Service | Notes |
 |------|---------|-------|
 | Server | `src/email` (Ruby / Sinatra) | Exposes **HTTP** POST `/send_order_confirmation` in `src/email/email_server.rb` line 43. Does **not** use gRPC. |
-| Client | `src/checkout` (Go) | Calls email over **HTTP JSON** via `otelhttp.Post` to `/send_order_confirmation` (`src/checkout/main.go` line 561). `pb.EmailServiceClient` stub is allocated but never used for RPC calls. |
+| Client | `src/checkout` (Go) | Calls email over **HTTP JSON** via `otelhttp.Post` to `/send_order_confirmation` (`src/checkout/main.go` line 604). `pb.EmailServiceClient` stub is allocated but never used for RPC calls. |
 
 Key messages:
 

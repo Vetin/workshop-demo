@@ -152,3 +152,8 @@ The following rules apply throughout:
 3. **User IDs** (`app.user.id`) are session-scoped UUIDs, not PII-linked identifiers.
 4. **No CVV or full card number ever flows into any span, metric, or log field.**
 5. The `transform` processor strips query strings from span names, preventing accidental leakage of query parameters (e.g., search terms, tokens) into Jaeger.
+6. **Gift message text (`gift_message` / `giftMessage`) is PII and must never
+   appear as a span attribute, event, log field, metric label, or in any OTLP
+   export across any service.** Checkout passes it to the email service only
+   over HTTP and never records it in telemetry. The email service renders it
+   in the confirmation template only.

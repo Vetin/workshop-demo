@@ -77,3 +77,40 @@ All use `@grpc/grpc-js` with `ChannelCredentials.createInsecure()`.
 1. The TypeScript protobuf stubs in `src/frontend/protos/` are generated files. Changes to `pb/demo.proto` must trigger regeneration; there is no automated check in CI that verifies they are current.
 2. Shipping is called via HTTP from `src/frontend/gateways/Api.gateway.ts` (not gRPC), even though `ShippingService` is in the proto.
 3. The browser sends traces directly to `PUBLIC_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT`. If `ENVOY_PORT` changes, this URL must also change.
+
+## Testing Patterns
+
+### ProductPrice rendering format
+
+`src/frontend/components/ProductPrice/ProductPrice.tsx` renders prices as:
+
+```text
+{currencySymbol} {total.toFixed(2)}
+```
+
+There is a **space** between the currency symbol and the amount. USD renders as
+`$ 15.00`, not `$15.00`. Cypress assertions on prices must use the space-
+separated format: `cy.contains('$ 15.00')`.
+
+### Cypress cart page tests
+
+The `/cart` page renders `<EmptyCart />` when the cart has no items, hiding the
+entire `CartDetail` and `CheckoutForm`. Cypress tests that need to interact with
+the checkout form (gift wrap checkbox, place order button, address fields) must
+first add an item to the cart via the UI:
+
+```typescript
+getElementByField(CypressFields.ProductCard).first().click();
+getElementByField(CypressFields.ProductAddToCart).click();
+cy.wait('@addToCart');
+cy.wait('@getCart', { timeout: 10000 });
+cy.wait(2000);
+cy.location('href').should('match', /\/cart$/);
+// CartDetail is now rendered
+```
+
+### IFormData field naming
+
+All fields in `IFormData` (`src/frontend/components/CheckoutForm/CheckoutForm.tsx`)
+use **camelCase**: `firstName`, `lastName`, `streetAddress`, `giftWrap`,
+`giftMessage`. Do not use snake_case for new fields.
