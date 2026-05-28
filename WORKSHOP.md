@@ -89,3 +89,99 @@ docs/features/checkout-flow/changes/gift-wrap-checkout/
 ├── 04-plan-review.md
 └── final-report.md
 ```
+
+---
+
+## Codex Review Council
+
+One of the more powerful pieces of the pipeline is the
+**Codex review council** — a multi-agent debate system that reviews your design
+and implementation plans *before any code is written*, using OpenAI Codex as an
+independent second opinion.
+
+### How it works
+
+Two specialized Codex agents run in parallel against a plan file. They read the same
+document but look for different failure modes. Claude orchestrates: it triages every
+finding, can argue back against a reviewer if the finding is wrong for this project,
+and only escalates genuine disagreements to you.
+
+```
+Design / Impl Plan
+       │
+       ├──► Architecture reviewer  ──┐
+       │    (design quality,          │
+       │     boundary violations)     ├──► Claude triages ──► Fix or escalate
+       │                              │
+       └──► Feasibility reviewer  ───┘
+            (can this actually
+             be built as described?)
+                   │
+                   └──► Fresh generalist pass  (catches what specialists missed)
+```
+
+After all rounds, a generalist reviewer does one final pass with fresh eyes.
+Max 10 rounds per council.
+
+### The two skills
+
+| Skill | When to use | Reviewers |
+|-------|-------------|-----------|
+| `design-plan-codex-review` | After brainstorming, before writing the impl plan | `codex-review-architecture` + `codex-review-feasibility` + generalist |
+| `impl-plan-codex-review` | After writing the impl plan, before execution | `codex-review-structure` + `codex-review-correctness` + generalist |
+
+**Invoke them in Claude Code:**
+```
+/design-plan-codex-review
+/impl-plan-codex-review
+```
+
+Both skills require the OpenAI Codex CLI:
+```bash
+npm install -g @openai/codex
+```
+
+### The `codex-reviewer` subagent
+
+Under the hood, both skills delegate each individual Codex interaction to the
+`codex-reviewer` subagent (`.claude/agents/codex-reviewer.md`). It is a pure executor:
+it calls the Codex CLI with a profile name, a plan path, and a prompt, then returns
+structured output including the `thread_id` so the council can resume the same session
+across multiple rounds.
+
+You never call `codex-reviewer` directly — the skills manage it.
+
+### Reviewer profiles
+
+Each reviewer runs under a named Codex profile. The prompts are local and editable:
+
+```
+.claude/skills/design-plan-codex-review/
+├── architecture-reviewer-prompt.md   ← what "architecture" means for this project
+├── feasibility-reviewer-prompt.md
+└── design-generalist-reviewer-prompt.md
+
+.claude/skills/impl-plan-codex-review/
+├── structure-reviewer-prompt.md
+├── correctness-reviewer-prompt.md
+└── impl-generalist-reviewer-prompt.md
+```
+
+Edit these files to tune what each reviewer cares about for your specific codebase.
+
+### Real example
+
+The gift-wrap feature ran both councils. The audit report is at:
+
+```
+docs/features/checkout-flow/changes/gift-wrap-checkout/codex-audit-report.md
+```
+
+It shows every finding, whether Claude agreed or disagreed, and what was escalated vs.
+resolved inline. A sample decision:
+
+| Finding | Severity | Decision |
+|---------|----------|----------|
+| Backend validation missing (length/UTF-8 in checkout) | IMPORTANT | AGREE → added to plan |
+| No staged rollout plan | IMPORTANT | DISAGREE → withdrawn (demo app deploys atomically) |
+| Gift-wrap fee hardcoded in multiple layers | MINOR | AGREE → noted |
